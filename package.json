@@ -1,9 +1,43 @@
 {
   "name": "xdash",
-  "module": "index.ts",
-  "type": "module",
+  "version": "0.1.0",
+  "description": "A lean TypeScript utility library designed for simplicity and performance.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shtse8/xdash.git"
+  },
+  "keywords": [
+    "typescript",
+    "utilities",
+    "modular",
+    "tree-shakable",
+    "performance",
+    "type-guards"
+  ],
+  "files": [
+    "dist"
+  ],
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.esm.js"
+  },
+  "author": "Kyle Tse <shtse8@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shtse8/xdash/issues"
+  },
+  "homepage": "https://github.com/shtse8/xdash#readme",
+  "scripts": {
+    "test": "bun test",
+    "build": "bun build.ts",
+    "release": "bun run test & bun run build & release-it"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@anymud/bun-plugin-dts": "^1.0.2",
+    "@types/bun": "latest",
+    "consola": "^3.2.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
