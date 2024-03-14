@@ -40,8 +40,6 @@
     "consola": "^3.2.3",
     "release-it": "^17.1.1",
     "typedoc": "^0.25.12",
-    "starlight-typedoc": "^0.9.0",
-    "typedoc-plugin-markdown": "next",
     "astro": "latest"
   },
   "peerDependencies": {
