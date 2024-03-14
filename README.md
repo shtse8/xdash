@@ -77,6 +77,7 @@ if (isStr(myVar)) {
 }
 ```
 
+[View the full documentation](https://shtse8.github.io/xdash/) to explore all the available utilities and their usage.
 
 ## Contributing 🤝
 
