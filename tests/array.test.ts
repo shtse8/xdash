@@ -45,12 +45,12 @@ describe('array', () => {
     test('takeRight', () => {
         expect(x.takeRight([1, 2, 3], 2)).toEqual([2, 3])
     })
-    test('xor', () => {
-        expect(x.xor([0, 1, 0, 0, 0])).toBe(true)
-        expect(x.xor([0, 1, 0, 0, 1])).toBe(false)
-        expect(x.xor([0, 0, 0, 0, 0])).toBe(false)
-        expect(x.xor([1, 1, 1, 1, 1])).toBe(false)
-        expect(x.xor(['foo', 1, 0, 0, 0])).toBe(false)
-        expect(x.xor(['foo', 0, 0, 0, null])).toBe(true)
+    test('hasOne', () => {
+        expect(x.hasOne([0, 1, 0, 0, 0])).toBe(true)
+        expect(x.hasOne([0, 1, 0, 0, 1])).toBe(false)
+        expect(x.hasOne([0, 0, 0, 0, 0])).toBe(false)
+        expect(x.hasOne([1, 1, 1, 1, 1])).toBe(false)
+        expect(x.hasOne(['foo', 1, 0, 0, 0])).toBe(false)
+        expect(x.hasOne(['foo', 0, 0, 0, null])).toBe(true)
     })
 })
