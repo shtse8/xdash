@@ -73,4 +73,15 @@ describe('typed', () => {
     test('toObj', () => {
         expect(x.toObj([['a', 1], ['b', 2]], x => x[0], x => x[1])).toEqual({ a: 1, b: 2 })
     })
+    test('isEmpty', () => {
+        expect(x.isEmpty(null)).toBe(true)
+        expect(x.isEmpty(undefined)).toBe(true)
+        expect(x.isEmpty('')).toBe(true)
+        expect(x.isEmpty([])).toBe(true)
+        expect(x.isEmpty({})).toBe(true)
+        expect(x.isEmpty(0)).toBe(false)
+        expect(x.isEmpty('abc')).toBe(false)
+        expect(x.isEmpty([1, 2, 3])).toBe(false)
+        expect(x.isEmpty({ a: 1 })).toBe(false)
+    })
 })
