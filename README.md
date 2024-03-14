@@ -1,7 +1,7 @@
 # xdash: A Modular, Typed, and Extensible TypeScript Library 🚀
 ### Simple. Straightforward. Designed for Ease.
 
-![xdash: A Modular, Typed, and Extensible TypeScript Library](https://github.com/shtse8/xdash/raw/main/banner.png)
+![xdash: A Modular, Typed, and Extensible TypeScript Library](https://github.com/shtse8/xdash/blob/main/raw/banner.png?raw=true)
 
 Welcome to **xdash** – a lean and efficient TypeScript utility library designed to enhance your development workflow. With a focus on simplicity, performance, and strong typing, xdash equips you with a carefully selected set of tools that make TypeScript development smoother and more enjoyable.
 
