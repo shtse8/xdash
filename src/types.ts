@@ -119,3 +119,10 @@ export type EnumFromList<T extends readonly string[], CapitalizeKeys extends boo
 export type RequireFields<T, K extends keyof T> = T & {
     [P in K]-?: NonNullable<T[P]>;
 };
+
+
+/**
+ * Nullable type for T.
+ * @param T type to make nullable
+ */
+export type Nullable<T> = T | null | undefined;
