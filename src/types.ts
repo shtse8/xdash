@@ -106,3 +106,16 @@ export type EnumFromList<T extends readonly string[], CapitalizeKeys extends boo
     [K in T[number]as CapitalizeKeys extends true ? Capitalize<K> : K]: CapitalizeValues extends true ? Capitalize<K> : K
 };
 
+/**
+ * Requires the specified fields K in type T.
+ * @param T type to require fields in
+ * @param K fields to require
+ * @returns a type with the specified fields required
+ * @example
+ * type Example = { a?: number, b?: string }
+ * type RequiredFields = RequireFields<Example, 'a'> // { a: number, b?: string }
+ * type RequiredFields = RequireFields<Example, 'a' | 'b'> // { a: number, b: string }
+ */
+export type RequireFields<T, K extends keyof T> = T & {
+    [P in K]-?: NonNullable<T[P]>;
+};
