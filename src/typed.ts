@@ -189,12 +189,3 @@ export function isNullish(value: unknown): value is null | undefined {
 export function isEmpty(value: any): boolean {
     return value === null || value === undefined || (typeof value === 'string' && value.trim() === '') || (Array.isArray(value) && value.length === 0) || (typeof value === 'object' && Object.keys(value).length === 0);
 }
-
-/**
- * Compacts an array by removing null and undefined values.
- * @param arr array to compact
- * @returns the compacted array
- */
-export function compact<T>(arr: (T | null | undefined)[]): T[] {
-    return arr.filter(Boolean) as T[];
-}
