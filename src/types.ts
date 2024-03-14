@@ -106,12 +106,3 @@ export type EnumFromList<T extends readonly string[], CapitalizeKeys extends boo
     [K in T[number]as CapitalizeKeys extends true ? Capitalize<K> : K]: CapitalizeValues extends true ? Capitalize<K> : K
 };
 
-
-/**
- * Determines if a value is empty.
- * @param value 
- * @returns 
- */
-export function isEmpty(value: any): boolean {
-    return value === null || value === undefined || (typeof value === 'string' && value.trim() === '') || (Array.isArray(value) && value.length === 0) || (typeof value === 'object' && Object.keys(value).length === 0);
-}

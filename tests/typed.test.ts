@@ -84,4 +84,7 @@ describe('typed', () => {
         expect(x.isEmpty([1, 2, 3])).toBe(false)
         expect(x.isEmpty({ a: 1 })).toBe(false)
     })
+    test('compact', () => {
+        expect(x.compact([1, null, 2, undefined, 3])).toEqual([1, 2, 3])
+    })
 })
