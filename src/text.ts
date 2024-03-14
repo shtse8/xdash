@@ -66,18 +66,20 @@ export function semanticSlice(str: string, len: number, options: {
 
     // Constructing the regex pattern based on the provided options
     const separators = [
-        sliceOnPunctuation ? regexMap.punctuation : '',
-        sliceOnCjk ? regexMap.cjk : '',
-        sliceOnNumber ? regexMap.number : '',
-        sliceOnSpace ? regexMap.space : '',
-    ].filter(Boolean).join('');
+        sliceOnPunctuation ? regexMap.punctuation : undefined,
+        sliceOnCjk ? regexMap.cjk : undefined,
+        sliceOnNumber ? regexMap.number : undefined,
+        sliceOnSpace ? regexMap.space : undefined,
+        '$', // End of string
+    ].filter(Boolean).join('|');
 
     // Calculate the effective length of the string slice, considering the ellipsis symbol if included
     const ellipsisLen = includeEllipsis && ellipsis ? ellipsisSymbol.length : 0;
     const effectiveLength = Math.max(0, len - ellipsisLen);
 
     // Regex to match up to the effective length, optionally stopping at a separator if present
-    const regex = new RegExp(`^(.{0,${effectiveLength}})([${separators}])?`, 'su');
+    const regex = new RegExp(`^(.{0,${effectiveLength}})(${separators})`, 'su');
+
     let match = str.match(regex);
 
     // If no match is found, return an empty string
@@ -99,51 +101,135 @@ export function semanticSlice(str: string, len: number, options: {
 
 
 /**
- * Splits a string semantically, considering word boundaries and optionally adding an ellipsis.
- * @param str string to split
- * @param len length to split the string by
- * @returns an array of the split string segments
+ * Normalizes a given text string, removing diacritics, handling special characters, and ensuring consistent casing and spacing.
+ * 
+ * @param {string} text - The input text to normalize.
+ * @param {object} [options={}] - Configuration options for the normalization.
+ * @param {boolean} [options.lowercase=true] - Whether to convert the text to lower case.
+ * @returns {string} The normalized text.
+ * 
  * @example
- * semanticSplit('The quick brown fox', 10) // returns ['The quick…', 'brown fox']
- * semanticSplit('The quick, brown fox', 10) // returns ['The quick,', 'brown fox']
- * semanticSplit('The quick, brown fox', 10, { ellipsis: true }) // returns ['The quick…', 'brown fox']
+ * // Normalizing a mixed-language string
+ * const mixedText = "Café 'au' lait, 世界!";
+ * const normalized = semanticNormalize(mixedText);
+ * console.log(normalized); // Output might be "cafe au lait 世界" depending on the exact regex definitions
+ * 
+ * @example
+ * // Normalizing a string with diacritics and mixed casing
+ * const diacriticText = "Àççéñtś and CĀSING";
+ * const normalizedDiacritics = semanticNormalize(diacriticText);
+ * console.log(normalizedDiacritics); // Output: "accents and casing"
  */
-export function semanticSplit(str: string, len: number): string[] {
-    // Initialize an array to hold the result segments.
-    const result: string[] = [];
+export function semanticNormalize(text: string, options: {
+    lowercase?: boolean
+} = {}): string {
+    const {
+        lowercase = true,
+    } = options;
 
-    // Continue splitting the string until its length is less than or equal to the target length.
-    while (str.length > len) {
-        // Use semanticSlice with a set of options that disable most semantic considerations.
-        // If no suitable split point is found, it defaults to a more permissive set of conditions.
-        let sliceOptions = {
-            ellipsis: false,
-            trimStart: false,
-            trimEnd: false,
-            sliceOnCjk: false,
-            sliceOnSpace: false,
-            sliceOnNumber: false,
-        };
-        let slicedStr = semanticSlice(str, len, sliceOptions);
+    // Normalize Unicode composition
+    text = text.normalize('NFKD');
 
-        // If the slice operation did not return a result, try again without the restrictive options.
-        if (!slicedStr) {
-            sliceOptions = { ...sliceOptions, sliceOnCjk: true, sliceOnSpace: true, sliceOnNumber: true };
-            slicedStr = semanticSlice(str, len, sliceOptions);
-        }
+    // Remove diacritics
+    text = text.replace(/\p{Diacritic}/gu, '');
 
-        // Break the loop if no slicing is possible to avoid an infinite loop.
-        if (!slicedStr) break;
+    // Remove apostrophes
+    text = text.replace(new RegExp(regexMap.apostrophe, 'ug'), '');
 
-        // Add the sliced part to the result array.
-        result.push(slicedStr);
-
-        // Update the remaining part of the string to continue splitting.
-        str = str.slice(slicedStr.length);
+    // Convert text to lower case
+    if (lowercase) {
+        text = text.toLowerCase();
     }
 
-    // Add the remaining part of the string to the result array.
-    result.push(str);
+    // Match and join segments to normalize spacing:
+    // - This approach respects the CJK, Latin vocabularies (including words with apostrophes), and digits.
+    // - Assumes 'regexMap.cjk' and 'regexMap.latinVocab' are regular expressions for matching CJK characters
+    //   and Latin-based vocabularies, respectively. Adjust as per actual definitions.
+    // - Segments are joined with a single space to ensure normalized spacing.
+    // text = Array.from(text.matchAll(new RegExp(`${regexMap.cjk}+|${regexMap.latinVocab}|\\d+`, 'ug')))
+    //     .map(match => match[0])
+    //     .join(' ');
 
-    return result;
+    return text;
+}
+
+/**
+ * Extracts words from a given text string, recognizing Latin vocabulary and CJK characters.
+ * The function can optionally treat consecutive CJK characters as a single word.
+ * This is particularly useful for processing mixed-language texts where the distinction
+ * between word boundaries may vary significantly between scripts.
+ *
+ * @param {string} text - The input text from which words will be extracted.
+ * @param {boolean} concatCjk - Determines whether consecutive CJK characters should be
+ *                              treated as a single word (true) or as individual characters (false).
+ *                              Default is false, meaning CJK characters are treated individually.
+ * @returns {string[]} - An array of extracted words. Latin words are identified based on standard
+ *                       word boundaries, while CJK character handling is determined by the concatCjk flag.
+ * 
+ * @example
+ * // Example with Latin text:
+ * console.log(semanticWords("Hello, world!"));
+ * // Expected output: ["Hello", "world"]
+ * 
+ * @example
+ * // Example with mixed Latin and CJK text, treating CJK characters individually:
+ * console.log(semanticWords("This is a 测试"));
+ * // Expected output: ["This", "is", "a", "测", "试"]
+ * 
+ * @example
+ * // Example with mixed Latin and CJK text, treating consecutive CJK characters as a single word:
+ * console.log(semanticWords("This is a 测试", true));
+ * // Expected output: ["This", "is", "a", "测试"]
+ */
+export function semanticWords(text: string, concatCjk = false): string[] {
+    // Construct the regular expression dynamically based on the concatCjk flag.
+    // This regex pattern aims to match Latin vocabulary words or CJK characters (grouped or not based on concatCjk).
+    // The use of non-capturing groups (?:) and 'ug' flags ensures global matching of all occurrences in Unicode mode.
+    const regex = new RegExp(`${regexMap.latinVocab}|${regexMap.cjk}${concatCjk ? '+' : ''}`, 'ug');
+
+    // Use matchAll to find all matches for the regex in the text, then map to extract the matched strings.
+    // This approach is streamlined for clarity and performance, directly converting the iterable from matchAll into an array of strings.
+    return Array.from(text.matchAll(regex)).map(match => match[0]);
+}
+
+/**
+ * Converts a given string into a slug, making it URL-friendly.
+ * Supports concatenating CJK characters, converting to lowercase,
+ * specifying a separator, and ensuring the slug does not exceed a specified maximum length,
+ * while trying to preserve whole words when possible.
+ *
+ * @param {string} text - The input string to slugify.
+ * @param {object} [options={}] - Configuration options for slugification.
+ * @param {boolean} [options.concatCjk=false] - Whether to treat consecutive CJK characters as a single word.
+ * @param {boolean} [options.lowercase=true] - Whether to convert the slug to lower case.
+ * @param {string} [options.separator='-'] - The separator to use between words in the slug.
+ * @param {number} [options.length=Infinity] - The desired maximum length of the generated slug. The function attempts not to exceed this length while preserving semantic integrity.
+ * @returns {string} - The slugified string.
+ */
+export function slugify(text: string, options: {
+    concatCjk?: boolean,
+    lowercase?: boolean,
+    separator?: string,
+    length?: number
+} = {}): string {
+    const {
+        concatCjk = false,
+        lowercase = true,
+        separator = '-',
+        length = Infinity,
+    } = options;
+
+    let words = semanticWords(semanticNormalize(text, { lowercase }), concatCjk);
+
+    // Construct the slug from words, checking against the length constraint.
+    let slug = '';
+    for (let word of words) {
+        // Check if adding the next word would exceed the length limit
+        if (slug.length + word.length + (slug ? separator.length : 0) > length) {
+            break; // Stop adding words to avoid exceeding the maximum length
+        }
+        slug += (slug ? separator : '') + word;
+    }
+
+    return slug;
 }

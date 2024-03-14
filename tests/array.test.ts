@@ -1,6 +1,5 @@
 import { describe, test, it, expect } from 'bun:test'
 import x from '../src/index'
-import { take } from '../dist'
 
 describe('array', () => {
     test('compact', () => {
