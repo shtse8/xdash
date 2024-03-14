@@ -232,3 +232,15 @@ export function separateWords(str: string): string[] {
             throw new Error('Unknown case type');
     }
 }
+
+
+/**
+ * Splits a string into an array of substrings based on a separator
+ * @param str string to split
+ * @param separator separator to split the string by
+ * @param limit maximum number of substrings to return
+ * @returns an array of substrings
+ */
+export function split(str: string, separator: string | RegExp, limit?: number): string[] {
+    return str.split(separator, limit);
+}
