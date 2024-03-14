@@ -55,14 +55,28 @@ bun install xdash
 Dive into xdash with a simple usage example:
 
 ```typescript
-import { isString } from 'xdash';
+import * as x from 'xdash';
+// import * as x_ from 'xdash'; // If you prefer to use a different name
 
 let myVar = "Hello, xdash!";
 
-if (isString(myVar)) {
+if (x.isStr(myVar)) {
   console.log(myVar); // Outputs: "Hello, xdash!"
 }
 ```
+
+You can also import individual utilities to ensure tree-shakability:
+
+```typescript
+import { isStr } from 'xdash';
+
+let myVar = "Hello, xdash!";
+
+if (isStr(myVar)) {
+  console.log(myVar); // Outputs: "Hello, xdash!"
+}
+```
+
 
 ## Contributing 🤝
 
