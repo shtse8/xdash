@@ -26,6 +26,10 @@ Get started with xdash by adding it to your project:
 npm install xdash
 # or
 yarn add xdash
+# or
+pnpm add xdash
+# or 
+bun install xdash
 ```
 
 ## Example Usage
