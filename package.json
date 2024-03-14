@@ -37,10 +37,11 @@
   "devDependencies": {
     "@anymud/bun-plugin-dts": "^1.0.2",
     "@types/bun": "latest",
+    "astro": "latest",
     "consola": "^3.2.3",
     "release-it": "^17.1.1",
     "typedoc": "^0.25.12",
-    "astro": "latest"
+    "typedoc-plugin-markdown": "next"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
