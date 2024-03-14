@@ -158,11 +158,11 @@ export function reduce<T, U>(arr: T[], fn: (acc: U, value: T, index: number, arr
 }
 
 /**
- * Xors an array. Returns true if only one element is truthy.
+ * Checks if exactly one element in the array is truthy based on a callback function.
  * @param arr array to flatten
  * @param fn callback to flatten the array
  * @returns the flattened array
  */
-export function xor(arr: any[], fn: (value: any, index: number, array: any[]) => boolean = isTruthy): boolean {
+export function hasOne(arr: any[], fn: (value: any, index: number, array: any[]) => boolean = isTruthy): boolean {
     return arr.filter(fn).length === 1;
 }
