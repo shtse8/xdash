@@ -180,6 +180,14 @@ export function isNullish(value: unknown): value is null | undefined {
     return value === null || value === undefined;
 }
 
+/**
+ * Determines if a value is truthy.
+ * @param value value to check
+ * @returns true if the value is a number, false otherwise
+ */
+export function isTruthy(value: unknown): boolean {
+    return !!value;
+}
 
 /**
  * Determines if a value is empty.

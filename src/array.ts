@@ -1,3 +1,5 @@
+import { isTruthy } from "./typed";
+
 /**
  * Returns the last element of an array
  * @param arr array to get the last element from
@@ -153,4 +155,14 @@ export function uniqBy<T>(arr: T[], fn: (a: T) => unknown): T[] {
  */
 export function reduce<T, U>(arr: T[], fn: (acc: U, value: T, index: number, array: T[]) => U, initial: U): U {
     return arr.reduce(fn, initial);
+}
+
+/**
+ * Xors an array. Returns true if only one element is truthy.
+ * @param arr array to flatten
+ * @param fn callback to flatten the array
+ * @returns the flattened array
+ */
+export function xor(arr: any[], fn: (value: any, index: number, array: any[]) => boolean = isTruthy): boolean {
+    return arr.filter(fn).length === 1;
 }

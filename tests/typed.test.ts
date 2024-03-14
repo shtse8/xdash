@@ -84,4 +84,13 @@ describe('typed', () => {
         expect(x.isEmpty([1, 2, 3])).toBe(false)
         expect(x.isEmpty({ a: 1 })).toBe(false)
     })
+    test('isTruthy', () => {
+        expect(x.isTruthy(0)).toBe(false)
+        expect(x.isTruthy('')).toBe(false)
+        expect(x.isTruthy(null)).toBe(false)
+        expect(x.isTruthy(undefined)).toBe(false)
+        expect(x.isTruthy(123)).toBe(true)
+        expect(x.isTruthy('abc')).toBe(true)
+        expect(x.isTruthy({ a: 1 })).toBe(true)
+    })
 })
