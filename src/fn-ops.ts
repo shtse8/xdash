@@ -32,7 +32,7 @@ export function ensure<T, Args extends readonly unknown[] = []>(
 
 
 /**
- * NOT operator for functions.
+ * Negates the result of a function.
  * @param fn function to negate
  * @returns a function that negates the result of the input function
  * @example
@@ -88,4 +88,114 @@ export function or<Args extends readonly unknown[]>(...fns: Array<(...args: Args
  */
 export function xor<Args extends readonly unknown[]>(...fns: Array<(...args: Args) => boolean>) {
     return (...args: Args) => fns.filter(fn => fn(...args)).length === 1;
+}
+
+/**
+ * Throttles a function.
+ * @param fn function to throttle
+ * @param ms time in milliseconds to throttle the function
+ * @returns a throttled function
+ * @example
+ * const log = throttle(console.log, 1000)
+ * log('foo') // logs 'foo'
+ * log('bar') // does not log 'bar'
+ * log('baz') // does not log 'baz'
+ * setTimeout(() => log('qux'), 1000) // logs 'qux' after 1 second
+ */
+export function throttle<Args extends readonly unknown[]>(fn: (...args: Args) => void, ms: number) {
+    let last = 0;
+    return (...args: Args) => {
+        const now = Date.now();
+        if (now - last < ms) return;
+        last = now;
+        fn(...args);
+    }
+}
+
+
+/**
+ * Debounces a function.
+ * @param fn function to debounce
+ * @param ms time in milliseconds to debounce the function
+ * @returns a debounced function
+ * @example
+ * const log = debounce(console.log, 1000)
+ * log('foo') // logs 'foo' after 1 second
+ * log('bar') // logs 'bar' after 1 second, 'foo' is not logged
+ */
+export function debounce<Args extends readonly unknown[]>(fn: (...args: Args) => void, ms: number) {
+    let timeout: Timer;
+    return (...args: Args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), ms);
+    }
+}
+
+
+/**
+ * Returns a function that only runs once.
+ * @param fn function to run once
+ * @returns a function that only runs once
+ * @example
+ * const logOnce = once(console.log)
+ * logOnce('foo') // logs 'foo'
+ * logOnce('bar') // does not log 'bar'
+ */
+export function once<Args extends readonly unknown[], T>(fn: (...args: Args) => T) {
+    let called = false;
+    let result: T;
+    return (...args: Args) => {
+        if (called) return result;
+        called = true;
+        result = fn(...args);
+        return result;
+    }
+}
+
+/**
+ * Binds a function to a context.
+ * @param fn function to bind
+ * @param thisArg context to bind the function to
+ * @returns a function that is bound to the context
+ * @example
+ * const obj = {
+ *  name: 'foo',
+ *  greet() {
+ *   return `Hello, ${this.name}!`;
+ *  }
+ * }
+ * const greet = bind(obj.greet, obj);
+ * greet() // returns 'Hello, foo!'
+ * const obj2 = { name: 'bar' };
+ * const greet2 = bind(obj.greet, obj2);
+ * greet2() // returns 'Hello, bar!'
+ * 
+ */
+export function bind<Args extends readonly unknown[], T, U>(fn: (this: T, ...args: Args) => U, thisArg: T) {
+    return (...args: Args) => fn.call(thisArg, ...args);
+}
+
+/**
+ * Memoizes a function.
+ * @param fn function to memoize
+ * @returns 
+ * @example
+ * const add = memoize((a: number, b: number) => {
+ *    console.log('Calculating sum');
+ *   return a + b;
+ * });
+ * add(1, 2) // logs 'Calculating sum' and returns 3
+ * add(1, 2) // returns 3
+ * add(2, 3) // logs 'Calculating sum' and returns 5
+ * add(2, 3) // returns 5
+ */
+export function memoize<Args extends readonly unknown[], T>(fn: (...args: Args) => T) {
+    const cache = new Map<string, T>();
+    return (...args: Args) => {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) return cache.get(key);
+        const result = fn(...args);
+        cache.set(key, result);
+        return result;
+    }
 }
