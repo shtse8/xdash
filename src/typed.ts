@@ -52,7 +52,7 @@ export function isFn(value: unknown): value is Function {
  * @returns true if the value is an object, false otherwise
  */
 export function isObj(value: unknown): value is object {
-    return !!value && typeof value === 'object';
+    return !!value && typeof value === 'object' && !isArr(value);
 }
 
 /**

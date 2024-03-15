@@ -15,6 +15,7 @@ describe('typed', () => {
         expect(x.isKeyOf('b', { a: 1 })).toBe(false)
     })
     test('isObj', () => {
+        expect(x.isObj([])).toBe(false)
         expect(x.isObj({})).toBe(true)
         expect(x.isObj(123)).toBe(false)
     })
