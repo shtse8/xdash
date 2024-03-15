@@ -52,7 +52,7 @@ export function isFn(value: unknown): value is Function {
  * @returns true if the value is an object, false otherwise
  */
 export function isObj(value: unknown): value is object {
-    return !!value && typeof value === 'object';
+    return !!value && typeof value === 'object' && !isArr(value);
 }
 
 /**
@@ -195,5 +195,8 @@ export function isTruthy(value: unknown): boolean {
  * @returns 
  */
 export function isEmpty(value: any): boolean {
-    return value === null || value === undefined || (typeof value === 'string' && value.trim() === '') || (Array.isArray(value) && value.length === 0) || (typeof value === 'object' && Object.keys(value).length === 0);
+    return isNullish(value)
+      || (isStr(value) && value.trim() === '')
+      || (isArr(value) && value.length === 0)
+      || (isObj(value) && Object.keys(value).length === 0);
 }

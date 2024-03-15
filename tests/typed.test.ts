@@ -15,6 +15,7 @@ describe('typed', () => {
         expect(x.isKeyOf('b', { a: 1 })).toBe(false)
     })
     test('isObj', () => {
+        expect(x.isObj([])).toBe(false)
         expect(x.isObj({})).toBe(true)
         expect(x.isObj(123)).toBe(false)
     })
@@ -79,6 +80,8 @@ describe('typed', () => {
         expect(x.isEmpty('')).toBe(true)
         expect(x.isEmpty([])).toBe(true)
         expect(x.isEmpty({})).toBe(true)
+        expect(x.isEmpty(new Set())).toBe(true)
+        expect(x.isEmpty(new Map())).toBe(true)
         expect(x.isEmpty(0)).toBe(false)
         expect(x.isEmpty('abc')).toBe(false)
         expect(x.isEmpty([1, 2, 3])).toBe(false)
