@@ -2,26 +2,26 @@ import { describe, test, it, expect } from 'bun:test'
 import x from '../src/index'
 
 describe('typed', () => {
-    test('isArr', () => {
-        expect(x.isArr([1, 2, 3])).toBe(true)
-        expect(x.isArr(123)).toBe(false)
+    test('isArray', () => {
+        expect(x.isArray([1, 2, 3])).toBe(true)
+        expect(x.isArray(123)).toBe(false)
     })
-    test('isFn', () => {
-        expect(x.isFn(() => { })).toBe(true)
-        expect(x.isFn(123)).toBe(false)
+    test('isFunction', () => {
+        expect(x.isFunction(() => { })).toBe(true)
+        expect(x.isFunction(123)).toBe(false)
     })
     test('isKeyOf', () => {
         expect(x.isKeyOf('a', { a: 1 })).toBe(true)
         expect(x.isKeyOf('b', { a: 1 })).toBe(false)
     })
-    test('isObj', () => {
-        expect(x.isObj([])).toBe(false)
-        expect(x.isObj({})).toBe(true)
-        expect(x.isObj(123)).toBe(false)
+    test('isObject', () => {
+        expect(x.isObject([])).toBe(false)
+        expect(x.isObject({})).toBe(true)
+        expect(x.isObject(123)).toBe(false)
     })
-    test('isStr', () => {
-        expect(x.isStr('abc')).toBe(true)
-        expect(x.isStr(123)).toBe(false)
+    test('isString', () => {
+        expect(x.isString('abc')).toBe(true)
+        expect(x.isString(123)).toBe(false)
     })
     test('throwError', () => {
         expect(() => x.throwError('Error')).toThrow('Error')
@@ -55,9 +55,9 @@ describe('typed', () => {
         expect(x.asError('Error')).toBeInstanceOf(Error)
         expect(x.asError(new Error('Error'))).toBeInstanceOf(Error)
     })
-    test('isNum', () => {
-        expect(x.isNum(123)).toBe(true)
-        expect(x.isNum('123')).toBe(false)
+    test('isNumber', () => {
+        expect(x.isNumber(123)).toBe(true)
+        expect(x.isNumber('123')).toBe(false)
     })
     test('keys', () => {
         expect(x.keys({ a: 1, b: 2 })).toEqual(['a', 'b'])

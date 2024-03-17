@@ -1,4 +1,4 @@
-import { capitalize } from './str';
+import { capitalize } from './string';
 import type { EnumFromList } from './types'
 
 /**
@@ -33,7 +33,7 @@ export function asError(value: unknown): Error {
  * @param value value to check
  * @returns true if the value is a string, false otherwise
  */
-export function isStr(value: unknown): value is string {
+export function isString(value: unknown): value is string {
     return typeof value === 'string';
 }
 
@@ -42,7 +42,7 @@ export function isStr(value: unknown): value is string {
  * @param value value to check
  * @returns true if the value is a function, false otherwise
  */
-export function isFn(value: unknown): value is Function {
+export function isFunction(value: unknown): value is Function {
     return typeof value === 'function';
 }
 
@@ -51,8 +51,8 @@ export function isFn(value: unknown): value is Function {
  * @param value value to check
  * @returns true if the value is an object, false otherwise
  */
-export function isObj(value: unknown): value is object {
-    return !!value && typeof value === 'object' && !isArr(value);
+export function isObject(value: unknown): value is object {
+    return !!value && typeof value === 'object' && !isArray(value);
 }
 
 /**
@@ -60,7 +60,7 @@ export function isObj(value: unknown): value is object {
  * @param value value to check
  * @returns true if the value is an array, false otherwise
  */
-export function isArr(value: unknown): value is any[] {
+export function isArray(value: unknown): value is any[] {
     return Array.isArray(value);
 }
 
@@ -70,7 +70,7 @@ export function isArr(value: unknown): value is any[] {
  * @param value value to check
  * @returns true if the value is a number, false otherwise
  */
-export function isNum(value: unknown): value is number {
+export function isNumber(value: unknown): value is number {
     return typeof value === 'number';
 }
 
@@ -141,7 +141,7 @@ export function hasOwn(obj: Record<any, any>, key: PropertyKey, { ignoreCase = f
  * @returns true if the value is a key of the object, false otherwise
  */
 export function isKeyOf<T extends object>(value: unknown, obj: T): value is keyof T {
-    return isStr(value) && isObj(obj) && value in obj;
+    return isString(value) && isObject(obj) && value in obj;
 }
 
 /**
@@ -169,7 +169,7 @@ export function isTruthy(value: unknown): boolean {
  */
 export function isEmpty(value: any): boolean {
     return isNullish(value)
-        || (isStr(value) && value.trim() === '')
-        || (isArr(value) && value.length === 0)
-        || (isObj(value) && Object.keys(value).length === 0);
+        || (isString(value) && value.trim() === '')
+        || (isArray(value) && value.length === 0)
+        || (isObject(value) && Object.keys(value).length === 0);
 }

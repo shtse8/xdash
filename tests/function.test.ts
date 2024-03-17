@@ -106,14 +106,14 @@ describe('xor', () => {
 // ensure
 describe('ensure', () => {
     test("Returns true for true function", () => {
-        const isArray = x.isArr;
+        const isArray = x.isArray;
         const ensureArray = x.ensure(isArray);
         const arr = [1, 2, 3];
         expect(ensureArray(arr)).toBe(arr);
     })
 
     test("Returns false for false function", () => {
-        const isArray = x.isArr;
+        const isArray = x.isArray;
         const ensureArray = x.ensure(isArray);
         expect(() => ensureArray("hello")).toThrow();
     })

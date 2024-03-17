@@ -13,10 +13,13 @@ try {
     consola.success('Removed old dist')
 
     consola.info('Starting build')
+    // get all source as entrypoints
+    const entrypoints = await fs.readdir(path.join(__dirname, 'src')).then(files => files.filter(file => file.endsWith('.ts')).map(file => path.join(__dirname, 'src', file)))
+    consola.info('entrypoints', entrypoints)
+
+    consola.info('Building esm modules')
     const result = await Bun.build({
-        entrypoints: [
-            './src/index.ts',
-        ],
+        entrypoints,
         outdir: distPath,
         external: [
             // '*'
@@ -24,8 +27,8 @@ try {
         plugins: [
             dts(),
         ],
-        // splitting: true,
-        naming: 'index.esm.js',
+        splitting: true,
+        naming: '[name].esm.js',
         root: './src',
         minify: true,
     })

@@ -20,8 +20,46 @@
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "exports": {
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.esm.js"
+    ".": {
+      "import": "./dist/index.esm.js",
+      "types": "./dist/index.d.js"
+    },
+    "./array": {
+      "import": "./dist/array.esm.js",
+      "types": "./dist/array.d.js"
+    },
+    "./async": {
+      "import": "./dist/async.esm.js",
+      "types": "./dist/async.d.js"
+    },
+    "./chain": {
+      "import": "./dist/chain.esm.js",
+      "types": "./dist/chain.d.js"
+    },
+    "./function": {
+      "import": "./dist/function.esm.js",
+      "types": "./dist/function.d.js"
+    },
+    "./object": {
+      "import": "./dist/object.esm.js",
+      "types": "./dist/object.d.js"
+    },
+    "./string": {
+      "import": "./dist/string.esm.js",
+      "types": "./dist/string.d.js"
+    },
+    "./misc": {
+      "import": "./dist/misc.esm.js",
+      "types": "./dist/misc.d.js"
+    },
+    "./types": {
+      "import": "./dist/types.esm.js",
+      "types": "./dist/types.d.js"
+    },
+    "./semantic": {
+      "import": "./dist/semantic.esm.js",
+      "types": "./dist/semantic.d.js"
+    }
   },
   "author": "Kyle Tse <shtse8@gmail.com>",
   "license": "MIT",
