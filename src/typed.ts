@@ -76,33 +76,6 @@ export function isNum(value: unknown): value is number {
 
 
 /**
- * Gets the keys of an object.
- * @param obj object to check
- * @returns true if the value is a number, false otherwise
- */
-export function keys<T extends object>(obj: T): (keyof T)[] {
-    return Object.keys(obj) as (keyof T)[];
-}
-
-/**
- * Gets the values of an object.
- * @param obj object to check
- * @returns true if the value is a number, false otherwise
- */
-export function values<T extends object>(obj: T): T[keyof T][] {
-    return Object.values(obj) as T[keyof T][];
-}
-
-/**
- * Gets the entries of an object.
- * @param obj object to check
- * @returns true if the value is a number, false otherwise
- */
-export function entries<T extends object>(obj: T): [keyof T, T[keyof T]][] {
-    return Object.entries(obj) as [keyof T, T[keyof T]][];
-}
-
-/**
  * Fills an array with a value.
  * @param keys keys to fill
  * @param value value to fill the keys with
@@ -196,7 +169,7 @@ export function isTruthy(value: unknown): boolean {
  */
 export function isEmpty(value: any): boolean {
     return isNullish(value)
-      || (isStr(value) && value.trim() === '')
-      || (isArr(value) && value.length === 0)
-      || (isObj(value) && Object.keys(value).length === 0);
+        || (isStr(value) && value.trim() === '')
+        || (isArr(value) && value.length === 0)
+        || (isObj(value) && Object.keys(value).length === 0);
 }

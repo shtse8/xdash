@@ -126,3 +126,21 @@ export type RequireFields<T, K extends keyof T> = T & {
  * @param T type to make nullable
  */
 export type Nullable<T> = T | null | undefined;
+
+
+/**
+ * Merge two types. If a key exists in both types, the value from the second type is used.
+ * @param T first type to merge
+ * @param U second type to merge
+ * @returns the merged type
+ * @example
+ * type A = { a: number, b: string }
+ * type B = { b: number, c: string }
+ * type Merged = Merge<A, B> // { a: number, b: number, c: string }
+ */
+export type Merge<T, U> = Omit<T, keyof U> & U;
+export type Merge3<T, U, V> = Merge<Merge<T, U>, V>;
+export type Merge4<T, U, V, W> = Merge<Merge3<T, U, V>, W>;
+export type Merge5<T, U, V, W, X> = Merge<Merge4<T, U, V, W>, X>;
+export type Merge6<T, U, V, W, X, Y> = Merge<Merge5<T, U, V, W, X>, Y>;
+export type Merge7<T, U, V, W, X, Y, Z> = Merge<Merge6<T, U, V, W, X, Y>, Z>;
