@@ -1,42 +1,9 @@
 import { describe, test, it, expect } from 'bun:test'
-import { $op, chain } from '../src/index'
+import { chain } from '../src/index'
 
 // Define a simple function for testing
 const add = (x: number, y: number): number => x + y;
 
-describe('$op function', () => {
-    it('correctly curries a function with provided arguments', () => {
-        // Curry the `add` function with $op
-        const curriedAdd = $op(add);
-
-        // Prepare the curried function with one argument (5)
-        const addFive = curriedAdd(5);
-
-        // Now `addFive` should be a function that expects another number and adds 5 to it
-        const result = addFive(10); // This should be equivalent to `add(10, 5)`
-
-        // Verify the result is as expected
-        expect(result).toBe(15);
-    });
-
-    it('returns a function that correctly applies all arguments to the original function', () => {
-        // Define a more complex function for testing
-        const subtract = (x: number, y: number, z: number): number => x - y - z;
-
-        // Curry the `subtract` function with $op
-        const curriedSubtract = $op(subtract);
-
-        // Prepare the curried function with two arguments (10, 5)
-        const subtractTenAndFive = curriedSubtract(10, 5);
-
-        // Now `subtractTenAndFive` should be a function that expects another number,
-        // subtracts 10 and then 5 from it
-        const result = subtractTenAndFive(20); // This should be equivalent to `subtract(20, 10, 5)`
-
-        // Verify the result is as expected
-        expect(result).toBe(5);
-    });
-});
 
 describe('Chain class', () => {
     it('initializes with a value and unwraps it correctly', () => {
@@ -73,4 +40,13 @@ describe('Chain class', () => {
         // Expected result is a string transformation of the initial value
         expect(result).toBe("Hello 5");
     });
+
+    it('handles operations with arguments', () => {
+        const initialValue = 5;
+        const add = (x: number, y: number) => x + y;
+        const result = chain(initialValue).pipe(add, x => x(5)).value();
+
+        expect(result).toBe(10);
+    });
+
 });
