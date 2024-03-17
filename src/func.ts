@@ -94,6 +94,9 @@ export function xor<Args extends readonly unknown[]>(...fns: Array<(...args: Arg
  * Throttles a function.
  * @param fn function to throttle
  * @param ms time in milliseconds to throttle the function
+ * @param options options to configure the throttle
+ * @param options.leading whether to run the function on the leading edge
+ * @param options.trailing whether to run the function on the trailing edge
  * @returns a throttled function
  * @example
  * const log = throttle(console.log, 1000)
@@ -101,15 +104,76 @@ export function xor<Args extends readonly unknown[]>(...fns: Array<(...args: Arg
  * log('bar') // does not log 'bar'
  * log('baz') // does not log 'baz'
  * setTimeout(() => log('qux'), 1000) // logs 'qux' after 1 second
+ * 
+ * @example
+ * const log = throttle(console.log, 1000, { leading: false, trailing: true })
+ * log('foo') // does not log 'foo'
+ * log('bar') // does not log 'bar'
+ * log('baz') // does not log 'baz'
+ * setTimeout(() => log('qux'), 1000) // logs 'qux' after 1 second
+ * 
+ * @example
+ * const log = throttle(console.log, 1000, { leading: true, trailing: false })
+ * log('foo') // logs 'foo'
+ * log('bar') // does not log 'bar'
+ * log('baz') // does not log 'baz'
+ * setTimeout(() => log('qux'), 1000) // does not log 'qux'
+ * 
+ * @example
+ * const log = throttle(console.log, 1000, { leading: false, trailing: false })
+ * log('foo') // does not log 'foo'
+ * log('bar') // does not log 'bar'
+ * log('baz') // does not log 'baz'
+ * setTimeout(() => log('qux'), 1000) // does not log 'qux'
+ * 
  */
-export function throttle<Args extends readonly unknown[]>(fn: (...args: Args) => void, ms: number) {
-    let last = 0;
-    return (...args: Args) => {
-        const now = Date.now();
-        if (now - last < ms) return;
-        last = now;
+export function throttle<Args extends readonly unknown[]>(fn: (...args: Args) => void, ms: number, { leading = true, trailing = true } = {}) {
+    let lastCallTime: number | null = null;
+    let lastInvokeTime: number = 0;
+    let timerId: ReturnType<typeof setTimeout> | null = null;
+    let lastArgs: Args | null = null;
+
+    const invoke = (args: Args) => {
+        lastInvokeTime = Date.now();
         fn(...args);
-    }
+    };
+
+    const startTimer = (args: Args) => {
+        if (timerId !== null) {
+            clearTimeout(timerId);
+        }
+        timerId = setTimeout(() => {
+            if (trailing && lastArgs !== null) {
+                invoke(lastArgs);
+            }
+            timerId = null;
+            lastArgs = null;
+        }, ms);
+    };
+
+    const shouldInvoke = (time: number) => {
+        if (lastCallTime === null) return true;
+        const timeSinceLastCall = time - lastCallTime;
+        const timeSinceLastInvoke = time - lastInvokeTime;
+        return (timeSinceLastCall >= ms) || (timeSinceLastInvoke >= ms);
+    };
+
+    return function (...args: Args) {
+        const now = Date.now();
+        const isInvoking = shouldInvoke(now);
+
+        lastArgs = args;
+        lastCallTime = now;
+
+        if (isInvoking) {
+            if (leading) {
+                invoke(args);
+            }
+            startTimer(args);
+        } else if (timerId === null && trailing) {
+            startTimer(args);
+        }
+    };
 }
 
 
@@ -117,18 +181,39 @@ export function throttle<Args extends readonly unknown[]>(fn: (...args: Args) =>
  * Debounces a function.
  * @param fn function to debounce
  * @param ms time in milliseconds to debounce the function
+ * @param options options to configure the debounce
+ * @param options.immediate whether to run the function immediately
  * @returns a debounced function
  * @example
  * const log = debounce(console.log, 1000)
  * log('foo') // logs 'foo' after 1 second
  * log('bar') // logs 'bar' after 1 second, 'foo' is not logged
+ * 
+ * @example
+ * const log = debounce(console.log, 1000, { immediate: true })
+ * log('foo') // logs 'foo'
+ * log('bar') // does not log 'bar'
+ * log('baz') // does not log 'baz'
+ * setTimeout(() => log('qux'), 1000) // logs 'qux' after 1 second
  */
-export function debounce<Args extends readonly unknown[]>(fn: (...args: Args) => void, ms: number) {
-    let timeout: Timer;
-    return (...args: Args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => fn(...args), ms);
-    }
+export function debounce<Args extends readonly unknown[]>(fn: (...args: Args) => void, ms: number, { immediate = false } = {}) {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    return function (...args: Args) {
+        const callNow = immediate && timeoutId === null;
+        const later = () => {
+            timeoutId = null;
+            if (!immediate) fn(...args);
+        };
+
+        if (timeoutId !== null) {
+            clearTimeout(timeoutId);
+        }
+
+        timeoutId = setTimeout(later, ms);
+
+        if (callNow) fn(...args);
+    };
 }
 
 
