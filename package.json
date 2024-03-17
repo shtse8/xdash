@@ -70,7 +70,7 @@
   "scripts": {
     "test": "bun test",
     "build": "bun build.ts",
-    "release": "bun run test & bun run build & bun release-it"
+    "release": "bun run test && bun run build && bun release-it"
   },
   "devDependencies": {
     "@anymud/bun-plugin-dts": "^1.0.2",
