@@ -4,8 +4,15 @@ import { isTruthy } from "./typed";
  * Returns the last element of an array
  * @param arr array to get the last element from
  * @returns the last element of the array
+ * @throws if the array is empty
+ * @example
+ * last([1, 2, 3]) // returns 3
+ * last([]) // throws an error
  */
 export function last<T>(arr: T[]): T {
+    if (arr.length === 0) {
+        throw new Error('Array is empty');
+    }
     return arr[arr.length - 1];
 }
 
@@ -13,8 +20,15 @@ export function last<T>(arr: T[]): T {
  * Returns the first element of an array
  * @param arr array to get the first element from
  * @returns the first element of the array
+ * @throws if the array is empty
+ * @example
+ * first([1, 2, 3]) // returns 1
+ * first([]) // throws an error
  */
 export function first<T>(arr: T[]): T {
+    if (arr.length === 0) {
+        throw new Error('Array is empty');
+    }
     return arr[0];
 }
 
@@ -26,6 +40,9 @@ export function first<T>(arr: T[]): T {
  * @returns the first n elements of the array
  */
 export function take<T>(arr: T[], n: number): T[] {
+    if (n <= 0) {
+        return [];
+    }
     return arr.slice(0, n);
 }
 
@@ -37,6 +54,13 @@ export function take<T>(arr: T[], n: number): T[] {
  * @returns 
  */
 export function takeRight<T>(arr: T[], size: number): T[] {
+    if (size <= 0) {
+        return [];
+    }
+    if (Number.isNaN(size)) {
+        return [];
+    }
+
     return arr.slice(-size);
 }
 
@@ -88,14 +112,14 @@ export function union<T>(...arrs: T[][]): T[] {
 }
 
 /**
- * Creates an array of unique values that are included in the first provided array, but not in the second.
- * @param arr array to difference from
- * @param values values to exclude
- * @returns the differenced array
+ * Creates an array of unique values that are included in the first given array, but not in the remaining arrays using SameValueZero for equality comparisons.
+ * @param arr array to exclude values from
+ * @param values arrays to exclude
+ * @returns the excluded array
  */
-export function difference<T>(arr: T[], values: T[]): T[] {
-    const set = new Set(values);
-    return arr.filter(x => !set.has(x));
+export function difference<T>(...values: T[][]): T[] {
+    const rest = concat(...values.slice(1));
+    return values[0].filter(x => !rest.includes(x));
 }
 
 /**
@@ -165,4 +189,49 @@ export function reduce<T, U>(arr: T[], fn: (acc: U, value: T, index: number, arr
  */
 export function hasOne(arr: any[], fn: (value: any, index: number, array: any[]) => boolean = isTruthy): boolean {
     return arr.filter(fn).length === 1;
+}
+
+/**
+ * Groups an array of values by a key.
+ * @param arr array to group
+ * @param key key to group by
+ * @returns the grouped array
+ * @example
+ * groupBy([{ a: 1 }, { a: 2 }, { a: 1 }], x => x.a) // returns { 1: [{ a: 1 }, { a: 1 }], 2: [{ a: 2 }] }
+ * groupBy(['foo', 'bar', 'hello', 'world'], x => x.length) // returns { 3: ['foo', 'bar'], 5: ['hello', 'world'] }
+ */
+export function groupBy<T, K extends string | number | symbol>(arr: T[], key: (x: T) => K): Record<K, T[]> {
+    return arr.reduce((acc, x) => {
+        const k = key(x)
+        if (!acc[k]) {
+            acc[k] = []
+        }
+        acc[k].push(x)
+        return acc
+    }, {} as Record<K, T[]>)
+}
+
+/**
+ * Flattens an array of arrays.
+ * @param arr array to flatten
+ * @param fn callback to flatten the array
+ * @returns the flattened array
+ * @example
+ * flat([[1, 2], [3, 4]], x => x) // returns [1, 2, 3, 4]
+ */
+export function flatMap<T, U>(arr: T[], fn: (x: T) => U[]): U[] {
+    return arr.reduce((acc, x) => acc.concat(fn(x)), [] as U[])
+}
+
+/**
+ * Returns the first element of an array, or a default value if the array is empty.
+ * @param arr array to get the first element from
+ * @param defaultValue default value
+ * @returns the first element of the array, or the default value if the array is empty
+ * @example
+ * firstOrDefault([1, 2, 3], 0) // returns 1
+ * firstOrDefault([], 0) // returns 0
+ */
+export function firstOrDefault<T>(arr: T[], defaultValue: T): T {
+    return arr.length > 0 ? arr[0] : defaultValue
 }
