@@ -1,34 +1,76 @@
 import { describe, test, it, expect } from 'bun:test'
-import x from '../src/index'
+import { $op, chain } from '../src/index'
 
-describe('chain', () => {
-    // test using basic array operations
-    test("Chains array operations", () => {
-        const arr = [1, 2, 3, 4, 5];
-        const expected = [2, 4, 6, 8, 10];
-        const result = x.chain(arr)
-            .pipe(x.map, x => x * 2)
-            .unwrap();
-        expect(result).toEqual(expected);
+// Define a simple function for testing
+const add = (x: number, y: number): number => x + y;
+
+describe('$op function', () => {
+    it('correctly curries a function with provided arguments', () => {
+        // Curry the `add` function with $op
+        const curriedAdd = $op(add);
+
+        // Prepare the curried function with one argument (5)
+        const addFive = curriedAdd(5);
+
+        // Now `addFive` should be a function that expects another number and adds 5 to it
+        const result = addFive(10); // This should be equivalent to `add(10, 5)`
+
+        // Verify the result is as expected
+        expect(result).toBe(15);
     });
 
-    // test using basic string operations
-    test("Chains string operations", () => {
-        const str = "Hello world";
-        const expected = "HELLO WORLD";
-        const result = x.chain(str)
-            .pipe(x.upperCase)
-            .unwrap();
-        expect(result).toBe(expected);
+    it('returns a function that correctly applies all arguments to the original function', () => {
+        // Define a more complex function for testing
+        const subtract = (x: number, y: number, z: number): number => x - y - z;
+
+        // Curry the `subtract` function with $op
+        const curriedSubtract = $op(subtract);
+
+        // Prepare the curried function with two arguments (10, 5)
+        const subtractTenAndFive = curriedSubtract(10, 5);
+
+        // Now `subtractTenAndFive` should be a function that expects another number,
+        // subtracts 10 and then 5 from it
+        const result = subtractTenAndFive(20); // This should be equivalent to `subtract(20, 10, 5)`
+
+        // Verify the result is as expected
+        expect(result).toBe(5);
+    });
+});
+
+describe('Chain class', () => {
+    it('initializes with a value and unwraps it correctly', () => {
+        const initialValue = 10;
+        const result = chain(initialValue).value();
+
+        expect(result).toBe(initialValue);
     });
 
-    // test using basic object operations
-    test("Chains object operations", () => {
-        const obj = { a: 1, b: 2, c: 3 };
-        const expected = { a: 2, b: 4, c: 6 };
-        const result = x.chain(obj)
-            .pipe(x.mapValues, x => x * 2)
-            .unwrap();
-        expect(result).toEqual(expected);
+    it('applies a single operation to the initial value', () => {
+        const initialValue = 5;
+        const addFive = (x: number) => x + 5;
+        const result = chain(initialValue).pipe(addFive).value();
+
+        expect(result).toBe(10);
     });
-})
+
+    it('chains multiple operations and applies them in order', () => {
+        const initialValue = 5;
+        const addFive = (x: number) => x + 5;
+        const multiplyByTwo = (x: number) => x * 2;
+        const result = chain(initialValue).pipe(addFive).pipe(multiplyByTwo).value();
+
+        // Expected order of operations: (5 + 5) * 2
+        expect(result).toBe(20);
+    });
+
+    it('handles operations that change the type of the value', () => {
+        const initialValue = 5;
+        const toString = (x: number) => x.toString();
+        const addHello = (x: string) => `Hello ${x}`;
+        const result = chain(initialValue).pipe(toString).pipe(addHello).value();
+
+        // Expected result is a string transformation of the initial value
+        expect(result).toBe("Hello 5");
+    });
+});
