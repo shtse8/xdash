@@ -1,6 +1,6 @@
 {
   "name": "xdash",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A lean TypeScript utility library designed for simplicity and performance.",
   "repository": {
     "type": "git",
