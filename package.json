@@ -67,6 +67,7 @@
     "url": "https://github.com/shtse8/xdash/issues"
   },
   "homepage": "https://github.com/shtse8/xdash#readme",
+  "sideEffects": false,
   "scripts": {
     "test": "bun test",
     "build": "bun build.ts",
