@@ -30,7 +30,7 @@ export class Chain<I, O> {
         ]);
     }
 
-    value(): O {
+    get value(): O {
         return this.ops.reduce((acc, fn) => fn(acc), this.initialValue) as unknown as O;
     }
 }
