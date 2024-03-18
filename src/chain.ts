@@ -12,12 +12,17 @@ export class Chain<I, O> {
      * @param ops functions to pipe
      * @returns a new chain with the result of the operations
      */
-    pipe<U>(...ops: ((value: O) => U)[]): Chain<I, U>;
-    pipe<U, V>(op1: (value: O) => U, op2: (value: U) => V): Chain<I, V>;
-    pipe<U, V, W>(op1: (value: O) => U, op2: (value: U) => V, op3: (value: V) => W): Chain<I, W>;
-    pipe<U, V, W, X>(op1: (value: O) => U, op2: (value: U) => V, op3: (value: V) => W, op4: (value: W) => X): Chain<I, X>;
-    pipe<U, V, W, X, Y>(op1: (value: O) => U, op2: (value: U) => V, op3: (value: V) => W, op4: (value: W) => X, op5: (value: X) => Y): Chain<I, Y>;
-    pipe<U, V, W, X, Y, Z>(op1: (value: O) => U, op2: (value: U) => V, op3: (value: V) => W, op4: (value: W) => X, op5: (value: X) => Y, op6: (value: Y) => Z): Chain<I, Z>;
+    pipe<P, Q, R, S, T, U, V, W, X, Y, Z>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R, op4: (value: R) => S, op5: (value: S) => T, op6: (value: T) => U, op7: (value: U) => V, op8: (value: V) => W, op9: (value: W) => X, op10: (value: X) => Y, op11: (value: Y) => Z): Chain<I, Z>;
+    pipe<P, Q, R, S, T, U, V, W, X, Y>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R, op4: (value: R) => S, op5: (value: S) => T, op6: (value: T) => U, op7: (value: U) => V, op8: (value: V) => W, op9: (value: W) => X, op10: (value: X) => Y): Chain<I, Y>;
+    pipe<P, Q, R, S, T, U, V, W, X>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R, op4: (value: R) => S, op5: (value: S) => T, op6: (value: T) => U, op7: (value: U) => V, op8: (value: V) => W, op9: (value: W) => X): Chain<I, X>;
+    pipe<P, Q, R, S, T, U, V, W>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R, op4: (value: R) => S, op5: (value: S) => T, op6: (value: T) => U, op7: (value: U) => V, op8: (value: V) => W): Chain<I, W>;
+    pipe<P, Q, R, S, T, U, V>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R, op4: (value: R) => S, op5: (value: S) => T, op6: (value: T) => U, op7: (value: U) => V): Chain<I, V>;
+    pipe<P, Q, R, S, T, U>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R, op4: (value: R) => S, op5: (value: S) => T, op6: (value: T) => U): Chain<I, U>;
+    pipe<P, Q, R, S, T>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R, op4: (value: R) => S, op5: (value: S) => T): Chain<I, T>;
+    pipe<P, Q, R, S>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R, op4: (value: R) => S): Chain<I, S>;
+    pipe<P, Q, R>(op1: (value: O) => P, op2: (value: P) => Q, op3: (value: Q) => R): Chain<I, R>;
+    pipe<P, Q>(op1: (value: O) => P, op2: (value: P) => Q): Chain<I, Q>;
+    pipe<P>(op1: (value: O) => P): Chain<I, P>;
     pipe(...ops: ((value: O) => unknown)[]): Chain<I, unknown> {
         return new Chain<I, unknown>(this.initialValue, [
             ...this.ops,
