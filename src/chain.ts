@@ -2,7 +2,7 @@
 /**
  * Chain class to be used in a pipeline.
  * @example
- * chain(5).pipe(add, 5).pipe(multiply, 2).unwrap() // returns 20
+ * chain(5).pipe(add, 5).pipe(multiply, 2).value // returns 20
  */
 export class Chain<I, O> {
     constructor(private initialValue: I, private ops: ((value: any) => any)[] = []) { }
@@ -61,7 +61,7 @@ export class Chain<I, O> {
  * // const multiply = (x, y) => x * y;
  * 
  * // Correct usage in a chain
- * chain(5).pipe($op(add)(5)).pipe($op(multiply)(2)).value(); // returns 20
+ * chain(5).pipe($op(add)(5)).pipe($op(multiply)(2)).value; // returns 20
  */
 export function $op<T, Args extends unknown[], U>(fn: (value: T, ...args: Args) => U) {
     return (...args: Args) => (value: T) => fn(value, ...args);
