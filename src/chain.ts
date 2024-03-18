@@ -7,8 +7,22 @@
 export class Chain<I, O> {
     constructor(private initialValue: I, private ops: ((value: any) => any)[] = []) { }
 
-    pipe<U>(fn: (value: O) => U): Chain<I, U> {
-        return new Chain<I, U>(this.initialValue, [...this.ops, fn]);
+    /**
+     * Pipes a value through a series of functions.
+     * @param ops functions to pipe
+     * @returns a new chain with the result of the operations
+     */
+    pipe<U>(...ops: ((value: O) => U)[]): Chain<I, U>;
+    pipe<U, V>(op1: (value: O) => U, op2: (value: U) => V): Chain<I, V>;
+    pipe<U, V, W>(op1: (value: O) => U, op2: (value: U) => V, op3: (value: V) => W): Chain<I, W>;
+    pipe<U, V, W, X>(op1: (value: O) => U, op2: (value: U) => V, op3: (value: V) => W, op4: (value: W) => X): Chain<I, X>;
+    pipe<U, V, W, X, Y>(op1: (value: O) => U, op2: (value: U) => V, op3: (value: V) => W, op4: (value: W) => X, op5: (value: X) => Y): Chain<I, Y>;
+    pipe<U, V, W, X, Y, Z>(op1: (value: O) => U, op2: (value: U) => V, op3: (value: V) => W, op4: (value: W) => X, op5: (value: X) => Y, op6: (value: Y) => Z): Chain<I, Z>;
+    pipe(...ops: ((value: O) => unknown)[]): Chain<I, unknown> {
+        return new Chain<I, unknown>(this.initialValue, [
+            ...this.ops,
+            ...ops
+        ]);
     }
 
     value(): O {
