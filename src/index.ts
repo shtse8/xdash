@@ -8,6 +8,7 @@ export * from './array'
 export * from './semantic'
 export * from './chain'
 export * from './object'
+export * from './switch'
 
 import * as typed from './typed'
 import * as types from './types'
@@ -18,6 +19,7 @@ import * as array from './array'
 import * as text from './semantic'
 import * as chain from './chain'
 import * as object from './object'
+import * as switchOps from './switch'
 export default {
     ...typed,
     ...types,
@@ -27,5 +29,6 @@ export default {
     ...array,
     ...text,
     ...chain,
-    ...object
+    ...object,
+    ...switchOps
 }
