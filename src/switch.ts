@@ -1,4 +1,4 @@
-class InlineSwitch<T, R = never, E = undefined> {
+export class InlineSwitch<T, R = never, E = undefined> {
     private cases = new Map<T, () => any>();
     private defaultCase?: () => any;
 
