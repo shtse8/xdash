@@ -174,20 +174,3 @@ export function isEmpty(value: any): boolean {
         || (isObject(value) && Object.keys(value).length === 0);
 }
 
-
-/**
- * Binds all functions in an object to the object.
- * @param thisArg object to bind functions to
- * @returns the object with all functions bound
- */
-export function bind<T extends object>(thisArg: T): T {
-    return new Proxy(thisArg, {
-        get(target, prop, receiver) {
-            const value = Reflect.get(target, prop, receiver);
-            if (typeof value === 'function') {
-                return value.bind(thisArg);
-            }
-            return value;
-        }
-    }) as T;
-}

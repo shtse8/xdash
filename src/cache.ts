@@ -41,7 +41,7 @@ export interface CacheOptions {
  * 
  * @example
  * class Example {
- *  const fn = cacheFunc(bind(this)._fn)
+ *  const fn = cacheFunc(bindSelf(this)._fn)
  *  async _fn() {
  *     return 'hello'
  *  }

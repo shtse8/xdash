@@ -261,6 +261,46 @@ export function bind<Args extends readonly unknown[], T, U>(fn: (this: T, ...arg
 }
 
 /**
+ * Creates a proxy for an object that ensures all its function properties are bound to the object itself.
+ * This can be particularly useful when you want to pass an object's method as a callback without losing its context.
+ * 
+ * @param {T} thisArg - The object for which to bind all its function properties. 
+ * @returns {T} A proxy of the same type as `thisArg` where every function property, when accessed,
+ *              is automatically bound to `thisArg`. Non-function properties are accessed as usual.
+ * 
+ * @example
+ * ```typescript
+ * class Example {
+ *     constructor(public name: string) {}
+ *     greet() {
+ *         console.log(`Hello, ${this.name}!`);
+ *     }
+ * }
+ * 
+ * const example = new Example('World');
+ * const boundExample = bindSelf(example);
+ * const greet = boundExample.greet;
+ * greet(); // Logs: "Hello, World!" - `this` context is preserved due to binding.
+ * ```
+ * 
+ * Note: This function uses JavaScript's Proxy and Reflect APIs to intercept property accesses
+ * and bind functions dynamically. It works at runtime and relies on TypeScript for type safety only.
+ * Be cautious that the use of `as T` for the return type is a type assertion that assumes the proxy
+ * maintains the same type interface as `thisArg`, which TypeScript cannot verify for dynamic property access.
+ */
+export function bindSelf<T extends object>(thisArg: T): T {
+    return new Proxy(thisArg, {
+        get(target, prop, receiver) {
+            const value = Reflect.get(target, prop, receiver);
+            if (typeof value === 'function') {
+                return value.bind(thisArg);
+            }
+            return value;
+        }
+    }) as T;
+}
+
+/**
  * Memoizes a function.
  * @param fn function to memoize
  * @returns 
