@@ -17,6 +17,16 @@ export function last<T>(arr: T[]): T {
 }
 
 /**
+ * Returns the last element of an array, or a default value if the array is empty.
+ * @param arr array to get the last element from
+ * @param defaultValue default value
+ * @returns the last element of the array, or the default value if the array is empty
+ */
+export function lastOrDefault<T, D>(arr: T[], defaultValue: D): T | D {
+    return arr.length > 0 ? arr[arr.length - 1] : defaultValue;
+}
+
+/**
  * Returns the first element of an array
  * @param arr array to get the first element from
  * @returns the first element of the array
@@ -232,6 +242,6 @@ export function flatMap<T, U>(arr: T[], fn: (x: T) => U[]): U[] {
  * firstOrDefault([1, 2, 3], 0) // returns 1
  * firstOrDefault([], 0) // returns 0
  */
-export function firstOrDefault<T>(arr: T[], defaultValue: T): T {
+export function firstOrDefault<T, D>(arr: T[], defaultValue: D): T | D {
     return arr.length > 0 ? arr[0] : defaultValue
 }
