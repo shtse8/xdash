@@ -47,7 +47,7 @@ export interface CacheOptions {
  *  }
  * }
  */
-export function cacheFunc<T, Args extends readonly unknown[]>(fn: (...args: Args) => Promise<T>, options: CacheOptions) {
+export function cacheFunc<T, Args extends readonly unknown[]>(fn: (...args: Args) => Promise<T>, options?: CacheOptions) {
     const cache = new Cache<T>(options)
     return (...args: Args) => cache.run(fn)
 }
@@ -59,9 +59,9 @@ export class Cache<T> {
     private value: T | undefined
     private updatedAt: Date | undefined
     private ttl: number;
-    constructor(options: CacheOptions) {
-        this.ttl = options.ttl || 1000 * 60 * 60
-        options.invalidator?.on('invalidate', () => this.invalidate())
+    constructor(options?: CacheOptions) {
+        this.ttl = options?.ttl || 1000 * 60 * 60
+        options?.invalidator?.on('invalidate', () => this.invalidate())
     }
 
     set(value: T) {
