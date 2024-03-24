@@ -41,7 +41,7 @@ describe('$op function', () => {
 describe('Chain class', () => {
     it('initializes with a value and unwraps it correctly', () => {
         const initialValue = 10;
-        const result = chain(initialValue).value();
+        const result = chain(initialValue).value;
 
         expect(result).toBe(initialValue);
     });
@@ -49,7 +49,9 @@ describe('Chain class', () => {
     it('applies a single operation to the initial value', () => {
         const initialValue = 5;
         const addFive = (x: number) => x + 5;
-        const result = chain(initialValue).pipe(addFive).value();
+        const result = chain(initialValue)
+          .pipe(addFive)
+          .value;
 
         expect(result).toBe(10);
     });
@@ -58,7 +60,9 @@ describe('Chain class', () => {
         const initialValue = 5;
         const addFive = (x: number) => x + 5;
         const multiplyByTwo = (x: number) => x * 2;
-        const result = chain(initialValue).pipe(addFive).pipe(multiplyByTwo).value();
+        const result = chain(initialValue)
+          .pipe(addFive, multiplyByTwo)
+          .value;
 
         // Expected order of operations: (5 + 5) * 2
         expect(result).toBe(20);
@@ -68,7 +72,9 @@ describe('Chain class', () => {
         const initialValue = 5;
         const toString = (x: number) => x.toString();
         const addHello = (x: string) => `Hello ${x}`;
-        const result = chain(initialValue).pipe(toString).pipe(addHello).value();
+        const result = chain(initialValue)
+          .pipe(toString, addHello)
+          .value;
 
         // Expected result is a string transformation of the initial value
         expect(result).toBe("Hello 5");
