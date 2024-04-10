@@ -200,7 +200,7 @@ export function semanticWords(text: string, concatCjk = false): string[] {
  *
  * @param {string} text - The input string to slugify.
  * @param {object} [options={}] - Configuration options for slugification.
- * @param {boolean} [options.concatCjk=false] - Whether to treat consecutive CJK characters as a single word.
+ * @param {boolean} [options.concatCjk=true] - Whether to treat consecutive CJK characters as a single word.
  * @param {boolean} [options.lowercase=true] - Whether to convert the slug to lower case.
  * @param {string} [options.separator='-'] - The separator to use between words in the slug.
  * @param {number} [options.length=Infinity] - The desired maximum length of the generated slug. The function attempts not to exceed this length while preserving semantic integrity.
@@ -213,7 +213,7 @@ export function slugify(text: string, options: {
     length?: number
 } = {}): string {
     const {
-        concatCjk = false,
+        concatCjk = true,
         lowercase = true,
         separator = '-',
         length = Infinity,
