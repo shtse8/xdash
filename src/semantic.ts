@@ -185,7 +185,7 @@ export function semanticWords(text: string, concatCjk = false): string[] {
     // Construct the regular expression dynamically based on the concatCjk flag.
     // This regex pattern aims to match Latin vocabulary words or CJK characters (grouped or not based on concatCjk).
     // The use of non-capturing groups (?:) and 'ug' flags ensures global matching of all occurrences in Unicode mode.
-    const regex = new RegExp(`${regexMap.latinVocab}|${regexMap.cjk}${concatCjk ? '+' : ''}`, 'ug');
+    const regex = new RegExp(`${regexMap.latinVocab}|${regexMap.number}+|${regexMap.cjk}${concatCjk ? '+' : ''}`, 'ug');
 
     // Use matchAll to find all matches for the regex in the text, then map to extract the matched strings.
     // This approach is streamlined for clarity and performance, directly converting the iterable from matchAll into an array of strings.
