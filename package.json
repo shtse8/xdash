@@ -70,16 +70,22 @@
   "sideEffects": false,
   "scripts": {
     "test": "bun test",
-    "build": "bun build.ts"
+    "build": "bun build.ts",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:api": "typedoc"
   },
   "devDependencies": {
     "@anymud/bun-plugin-dts": "^1.0.2",
     "@types/bun": "latest",
     "@types/jest": "^29.5.14",
-    "astro": "latest",
     "consola": "^3.2.3",
-    "typedoc": "^0.25.12",
-    "typedoc-plugin-markdown": "next"
+    "typedoc": "^0.28.1",
+    "typedoc-plugin-markdown": "^4.6.1",
+    "vitepress": "^1.6.3",
+    "vitepress-jsdoc": "^1.0.4",
+    "vue": "^3.5.13"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

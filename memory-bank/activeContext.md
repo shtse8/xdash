@@ -1,17 +1,29 @@
-<!-- Version: 0.3 | Last Updated: 2025-04-06 -->
+<!-- Version: 0.4 | Last Updated: 2025-04-06 -->
 # Active Context
 
-*   **Current Focus**: Implementing major project refactoring based on user feedback.
+*   **Current Focus**: Setting up documentation and preparing for CI/CD.
 *   **Recent Changes**: 
-    1.  Completed initial project analysis and Memory Bank setup.
-    2.  Received user feedback requesting significant changes: VitePress for docs, Jest for tests, function review (FP, performance, typing), benchmarking, CI/CD for npm & GitHub Pages, removal of old release tools.
-    3.  Updating Memory Bank to reflect new requirements and plan.
+    1.  Completed test refactoring for most modules (excluding `semanticSlice`).
+    2.  Removed old release tool (`release-it`).
+    3.  Installed VitePress and Vue dependencies.
+    4.  Removed old documentation tools (TypeDoc CLI, Astro) and files (`docs/`, `astro/`, `typedoc.json`).
+    5.  Manually initialized VitePress structure (`docs/`, `docs/.vitepress/`, `docs/index.md`, `docs/.vitepress/config.mts`).
+    6.  Updated `package.json` with VitePress scripts.
+    7.  Updated `.gitignore` for VitePress cache/dist.
+    8.  Attempted to use `vitepress-jsdoc` CLI but encountered errors.
+    9.  Decided to use TypeDoc (with `typedoc-plugin-markdown`) to generate API Markdown files into `docs/api`.
+    10. Re-installed TypeDoc dependencies and configured `typedoc.json`.
+    11. Updated `package.json` script `docs:api` to run TypeDoc.
+    12. Generated API Markdown files using TypeDoc.
+    13. Updated VitePress sidebar configuration (`docs/.vitepress/config.mts`) to link to generated API files.
+    14. Updated Hero Page content in `docs/index.md`.
+    15. Copied banner image to `docs/public/`.
 *   **Next Steps (High-Level Plan)**:
     1.  Update Memory Bank (This step).
-    2.  Remove `release-it` dependency and scripts.
-    3.  Install and configure Jest.
-    4.  Iteratively review functions and rewrite tests using Jest (starting with `array.ts`).
-    5.  Install and configure VitePress, remove old docs/tools (`TypeDoc`, `astro/`).
-    6.  Set up GitHub Actions for CI/CD (testing, npm publish, GitHub Pages deploy).
-    7.  Integrate benchmarking.
-*   **Active Decisions**: Proceeding with the refactoring plan, starting with Memory Bank update and then removing old release tools.
+    2.  Commit current changes (VitePress/TypeDoc setup).
+    3.  Push changes to remote repository.
+    4.  Set up GitHub Actions for CI/CD (testing, npm publish, GitHub Pages deploy).
+    5.  Address remaining issues (e.g., `semanticSlice` tests, JSDoc warnings).
+    6.  Integrate benchmarking.
+    7.  Manually enhance generated API docs with more examples/tutorials.
+*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress.

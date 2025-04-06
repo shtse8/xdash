@@ -175,3 +175,8 @@ dist
 .DS_Store
 /astro/package-lock.json
 /package-lock.json
+
+
+# VitePress
+docs/.vitepress/cache
+docs/.vitepress/dist

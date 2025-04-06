@@ -1,24 +1,26 @@
-# <!-- Version: 0.3 | Last Updated: 2025-04-06 -->
+# <!-- Version: 0.4 | Last Updated: 2025-04-06 -->
 # Project-Specific Rules & Patterns: xdash
 
 ## File Naming Conventions
 *   Source files: `*.ts`
-*   Test files: `*.test.ts` (Jest)
-*   VitePress config: `docs/.vitepress/config.js` (or `.ts`)
+*   Test files: `*.test.ts` (Jest via `bun test`)
+*   VitePress config: `docs/.vitepress/config.mts`
 *   VitePress pages: `docs/**/*.md`
+*   TypeDoc generated API: `docs/api/*.md`
 *   GitHub Actions: `.github/workflows/*.yml`
 
 ## Directory Structure
 *   `src/`: Core library source code.
-*   `tests/`: Unit tests (Jest).
+*   `tests/`: Unit tests.
 *   `dist/`: Build output (not committed).
-*   `docs/`: VitePress source files.
+*   `docs/`: VitePress source files (including `/api` for generated docs).
 *   `.github/workflows/`: CI/CD workflows.
 *   `memory-bank/`: Project context files.
 
 ## Build & Test
-*   Use `bun run test` (or equivalent Jest script) for tests.
+*   Use `bun run test` for tests.
 *   Use `bun run build` for building the library.
+*   Use `bun run docs:api` to generate API Markdown.
 *   Use `bun run docs:dev` / `bun run docs:build` for VitePress.
 
 ## Dependencies
@@ -35,7 +37,14 @@
 *   Automated npm publish on tag/release.
 *   Automated GitHub Pages deployment on push to main.
 
+## Documentation
+*   Use JSDoc/TSDoc comments in `src/` files.
+*   Run `bun run docs:api` (TypeDoc) to generate Markdown in `docs/api`.
+*   Manually edit `docs/index.md`, `docs/getting-started.md` etc.
+*   Manually enhance generated API files in `docs/api` with more examples if needed.
+*   VitePress builds the final site.
+
 ## Deprecated
-*   TypeDoc configuration (`typedoc.json`).
 *   Astro project (`astro/` directory).
 *   `release-it` configuration/scripts.
+*   `vitepress-jsdoc`.
