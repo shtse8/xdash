@@ -15,8 +15,7 @@ hero:
       link: /getting-started # Placeholder link
     - theme: alt
       text: View API Reference
-      link: /api # Placeholder link
-
+      link: /api/ # Link to API index
 features:
   - title: Blazing Fast ⚡
     details: Optimized for performance. xdash delivers speed without compromising on features. Get your results, faster.
@@ -43,4 +42,4 @@ console.log(compact(mixedArray)); // Output: [ 1, 2, 3, 4 ]
 
 ## Ready to dive in?
 
-Explore the [Getting Started guide](/getting-started) or jump straight into the [API Reference](/api).
+Explore the [Getting Started guide](/getting-started) or jump straight into the [API Reference](/api/).
