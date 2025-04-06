@@ -1,7 +1,7 @@
-<!-- Version: 0.6 | Last Updated: 2025-04-06 -->
+<!-- Version: 0.7 | Last Updated: 2025-04-06 -->
 # Active Context
 
-*   **Current Focus**: Finalizing documentation and CI/CD setup.
+*   **Current Focus**: Monitoring CI/CD after first tag push.
 *   **Recent Changes**:
     1.  Completed test refactoring for most modules (excluding `semanticSlice`).
     2.  Removed old release tool (`release-it`).
@@ -22,12 +22,14 @@
     17. Updated `.gitignore` to exclude `docs/api/` and removed tracked files from Git.
     18. Updated GitHub repository settings (description, topics, URL) via `gh` CLI.
     19. Created GitHub Actions CI/CD workflow file (`.github/workflows/ci.yml`) for testing, building, npm publish, and docs deployment.
+    20. Pushed all changes to `main` branch.
+    21. Created and pushed Git tag `v0.5.12` to trigger npm publish workflow.
 *   **Next Steps (High-Level Plan)**:
-    1.  **Push Changes**: Push all recent commits (Docs, README, .gitignore, CI/CD) to the remote repository (`main` branch).
-    2.  **Configure GitHub**: Ensure `NPM_TOKEN` secret and GitHub Pages source are set correctly in repository settings.
-    3.  **Test CI/CD**: Monitor the first run of the GitHub Actions workflow after pushing.
+    1.  **Monitor CI/CD**: Check GitHub Actions for successful completion of tests, build, and npm publish for tag `v0.5.12`. Check GitHub Pages deployment status after `main` branch workflow run.
+    2.  **Verify npm**: Check npmjs.com to confirm version `0.5.12` is published.
+    3.  **Verify Docs**: Check the GitHub Pages URL (`https://shtse8.github.io/xdash/`) once deployment is complete.
     4.  **Address remaining issues**: (e.g., JSDoc warnings). (Semantic module removed)
     5.  **Integrate benchmarking**.
     6.  **Manually enhance generated API docs** with more examples/tutorials.
     7.  **Create `CONTRIBUTING.md`**.
-*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues. CI/CD workflow implemented using GitHub Actions.
+*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues. CI/CD workflow implemented using GitHub Actions. Triggered first release via tag `v0.5.12`.
