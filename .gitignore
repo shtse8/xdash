@@ -180,3 +180,7 @@ dist
 # VitePress
 docs/.vitepress/cache
 docs/.vitepress/dist
+
+
+# Generated API Docs (TypeDoc)
+docs/api/
