@@ -1,7 +1,7 @@
-<!-- Version: 1.0 | Last Updated: 2025-04-06 -->
+<!-- Version: 1.1 | Last Updated: 2025-04-06 -->
 # Active Context
 
-*   **Current Focus**: Preparing for v0.5.14 release after v0.5.12 publish failure.
+*   **Current Focus**: Preparing for v0.5.14 release, cleaning up project structure.
 *   **Recent Changes**:
     1.  Completed test refactoring for most modules (excluding `semanticSlice`).
     2.  Removed old release tool (`release-it`).
@@ -28,13 +28,14 @@
     23. Added `CHANGELOG.md` file.
     24. Bumped version in `package.json` and `CHANGELOG.md` to `0.5.13` (intermediate step).
     25. Bumped version in `package.json` and `CHANGELOG.md` to `0.5.14` to prepare for clean release attempt.
+    26. Deleted redundant GitHub Actions workflow files (`publish-deploy.yml`, `release.yml`, `test.yml`).
 *   **Next Steps (High-Level Plan)**:
-    1.  **Push Changes**: Push the latest commits (version bump to 0.5.14) to the remote repository (`main` branch).
-    2.  **Create & Push Tag**: Create and push tag `v0.5.14`.
+    1.  **Push Changes**: Push the latest commits (workflow cleanup) to the remote repository (`main` branch).
+    2.  **(If not done) Create & Push Tag**: Create and push tag `v0.5.14`.
     3.  **Monitor CI/CD**: Check GitHub Actions for successful completion of tests, build, and npm publish for tag `v0.5.14`. Check GitHub Pages deployment status after `main` branch workflow run.
     4.  **Verify npm/Docs (v0.5.14)**: Check npmjs.com and GitHub Pages URL.
     5.  **Address remaining issues**: (e.g., JSDoc warnings). (Semantic module removed)
     6.  **Integrate benchmarking**.
     7.  **Manually enhance generated API docs** with more examples/tutorials.
     8.  **Create `CONTRIBUTING.md`**.
-*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues. CI/CD workflow implemented using GitHub Actions. Skipped v0.5.13 release due to v0.5.12 publish failure. Bumped version to `0.5.14` for next release attempt. Added standard LICENSE and CHANGELOG files.
+*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues. Consolidated CI/CD logic into `ci.yml`. Skipped v0.5.13 release due to v0.5.12 publish failure. Bumped version to `0.5.14` for next release attempt. Added standard LICENSE and CHANGELOG files. Removed redundant workflow files.
