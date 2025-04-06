@@ -1,0 +1,64 @@
+# .github/workflows/publish-deploy.yml
+name: Publish to npm and Deploy Docs
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags like v1.0.0
+
+permissions:
+  contents: write # Needed for GitHub Pages deployment
+  id-token: write # Needed for npm provenance
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build library
+        run: bun run build
+
+      - name: Publish to npm
+        run: bun publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # Requires NPM_TOKEN secret in GitHub repo settings
+
+  deploy-docs:
+    needs: build-and-publish # Run after successful publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate API Docs
+        run: bun run docs:api
+
+      - name: Build VitePress site
+        run: bun run docs:build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/.vitepress/dist
+          # Optional: configure custom domain, CNAME, etc.
+          # user_name: 'github-actions[bot]'
+          # user_email: 'github-actions[bot]@users.noreply.github.com'
