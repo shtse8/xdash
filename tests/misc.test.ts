@@ -1,8 +1,8 @@
-import { describe, expect, it, test } from 'bun:test'
-import x from '../src/index'
+// Removed bun:test import
+import { noop } from '../src/misc'; // Changed import path
 
 describe('misc', () => {
-    test('noop', () => {
-        expect(x.noop()).toBe(undefined)
-    })
-})
+    test('noop should return undefined', () => { // Clarified test name
+        expect(noop()).toBeUndefined(); // Removed x. prefix
+    });
+});

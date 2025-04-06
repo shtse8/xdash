@@ -81,6 +81,9 @@ export function takeRight<T>(arr: T[], size: number): T[] {
  * @returns 
  */
 export function chunk<T>(arr: T[], size: number): T[][] {
+    if (size < 1) {
+        return [];
+    }
     return arr.reduce((acc, _, i) => (i % size ? acc : [...acc, arr.slice(i, i + size)]), [] as T[][]);
 }
 
@@ -108,7 +111,9 @@ export function concat<T>(...arrs: T[][]): T[] {
  * @returns the intersected array
  */
 export function intersection<T>(...arrs: T[][]): T[] {
-    return arrs.reduce((acc, arr) => acc.filter(Set.prototype.has, new Set(arr)), arrs[0]);
+    // Ensure the final result contains only unique values
+    const intersected = arrs.reduce((acc, arr) => acc.filter(Set.prototype.has, new Set(arr)), arrs[0] || []);
+    return Array.from(new Set(intersected));
 }
 
 /**

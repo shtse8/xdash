@@ -1,5 +1,5 @@
-import { describe, test, it, expect, beforeEach, jest } from 'bun:test'
-import { merge, merge2, map, filter, fromEvent, fromEventHandler, until } from '~/async';
+// Removed bun:test import, relying on globals provided by 'bun test'
+import { merge, merge2, map, filter, fromEvent, fromEventHandler, until } from '../src/async'; // Changed import path
 
 async function* asyncGenerator<T>(array: T[]): AsyncGenerator<T> {
     for (const item of array) {
@@ -8,7 +8,7 @@ async function* asyncGenerator<T>(array: T[]): AsyncGenerator<T> {
 }
 
 describe('merge', () => {
-    it('correctly merges values from multiple async iterators', async () => {
+    test('correctly merges values from multiple async iterators', async () => { // Changed 'it' to 'test' for consistency
         const iter1 = asyncGenerator([1, 3, 5]);
         const iter2 = asyncGenerator([2, 4, 6]);
         const merged = merge(iter1, iter2);
@@ -22,7 +22,7 @@ describe('merge', () => {
         expect(result.sort()).toEqual([1, 2, 3, 4, 5, 6]);
     });
 
-    it('handles empty iterators correctly', async () => {
+    test('handles empty iterators correctly', async () => { // Changed 'it' to 'test'
         const iter1 = asyncGenerator([]);
         const iter2 = asyncGenerator([1, 2, 3]);
         const merged = merge(iter1, iter2);
@@ -35,7 +35,7 @@ describe('merge', () => {
         expect(result).toEqual([1, 2, 3]);
     });
 
-    it('completes when all iterators are completed', async () => {
+    test('completes when all iterators are completed', async () => { // Changed 'it' to 'test'
         const iter1 = asyncGenerator([1]);
         const iter2 = asyncGenerator([2]);
         const merged = merge(iter1, iter2);
@@ -50,8 +50,7 @@ describe('merge', () => {
         expect(result.includes(2)).toBeTruthy();
     });
 
-    // 
-    it('handles errors thrown by an iterator', async () => {
+    test('handles errors thrown by an iterator', async () => { // Changed 'it' to 'test'
         async function* errorGenerator() {
             yield 1;
             throw new Error('Test error');
@@ -73,7 +72,7 @@ describe('merge', () => {
 
 // merge2
 describe('merge2', () => {
-    it('correctly merges values from two async iterators', async () => {
+    test('correctly merges values from two async iterators', async () => { // Changed 'it' to 'test'
         const iter1 = asyncGenerator([1, 3, 5]);
         const iter2 = asyncGenerator([2, 4, 6]);
         const merged = merge2(iter1, iter2);
@@ -87,7 +86,7 @@ describe('merge2', () => {
         expect(result.sort()).toEqual([1, 2, 3, 4, 5, 6]);
     });
 
-    it('handles empty iterators correctly', async () => {
+    test('handles empty iterators correctly', async () => { // Changed 'it' to 'test'
         const iter1 = asyncGenerator([]);
         const iter2 = asyncGenerator([1, 2, 3]);
         const merged = merge2(iter1, iter2);
@@ -100,7 +99,7 @@ describe('merge2', () => {
         expect(result).toEqual([1, 2, 3]);
     });
 
-    it('completes when both iterators are completed', async () => {
+    test('completes when both iterators are completed', async () => { // Changed 'it' to 'test'
         const iter1 = asyncGenerator([1]);
         const iter2 = asyncGenerator([2]);
         const merged = merge2(iter1, iter2);
@@ -115,7 +114,7 @@ describe('merge2', () => {
         expect(result.includes(2)).toBeTruthy();
     });
 
-    it('handles errors thrown by an iterator', async () => {
+    test('handles errors thrown by an iterator', async () => { // Changed 'it' to 'test'
         async function* errorGenerator() {
             yield 1;
             throw new Error('Test error');
@@ -137,7 +136,7 @@ describe('merge2', () => {
 
 // map
 describe('map', () => {
-    it('correctly maps values from an async iterator', async () => {
+    test('correctly maps values from an async iterator', async () => { // Changed 'it' to 'test'
         const iter = asyncGenerator([1, 2, 3]);
         const doubled = map(iter, x => x * 2);
 
@@ -149,8 +148,8 @@ describe('map', () => {
         expect(result).toEqual([2, 4, 6]);
     });
 
-    it('handles empty iterators correctly', async () => {
-        const iter = asyncGenerator([]);
+    test('handles empty iterators correctly', async () => { // Changed 'it' to 'test'
+        const iter = asyncGenerator<number>([]); // Added type argument
         const doubled = map(iter, x => x * 2);
 
         const result = [];
@@ -161,7 +160,7 @@ describe('map', () => {
         expect(result).toEqual([]);
     });
 
-    it('handles errors thrown by an iterator', async () => {
+    test('handles errors thrown by an iterator', async () => { // Changed 'it' to 'test'
         async function* errorGenerator() {
             yield 1;
             throw new Error('Test error');
@@ -182,7 +181,7 @@ describe('map', () => {
 
 // filter
 describe('filter', () => {
-    it('correctly filters values from an async iterator', async () => {
+    test('correctly filters values from an async iterator', async () => { // Changed 'it' to 'test'
         const iter = asyncGenerator([1, 2, 3, 4, 5]);
         const evens = filter(iter, x => x % 2 === 0);
 
@@ -194,7 +193,7 @@ describe('filter', () => {
         expect(result).toEqual([2, 4]);
     });
 
-    it('handles empty iterators correctly', async () => {
+    test('handles empty iterators correctly', async () => { // Changed 'it' to 'test'
         const iter = asyncGenerator<number>([]);
         const evens = filter(iter, x => x % 2 === 0);
 
@@ -206,7 +205,7 @@ describe('filter', () => {
         expect(result).toEqual([]);
     });
 
-    it('handles errors thrown by an iterator', async () => {
+    test('handles errors thrown by an iterator', async () => { // Changed 'it' to 'test'
         async function* errorGenerator() {
             yield 1;
             throw new Error('Test error');
@@ -242,9 +241,12 @@ describe('fromEventHandler', () => {
         }
 
         emit(data: any) {
-            for (const listener of this.listeners) {
-                listener(data);
-            }
+            // Use Array.from to avoid issues if listener modifies the set during iteration
+            Array.from(this.listeners).forEach(listener => listener(data));
+        }
+
+        get listenerCount() { // Helper for testing cleanup
+            return this.listeners.size;
         }
     }
 
@@ -254,7 +256,7 @@ describe('fromEventHandler', () => {
         emitter = new MockEventEmitter();
     });
 
-    it('captures and yields a single event', async () => {
+    test('captures and yields a single event', async () => { // Changed 'it' to 'test'
         const generator = fromEventHandler<number>(
             emitter.on.bind(emitter),
             emitter.off.bind(emitter)
@@ -265,9 +267,10 @@ describe('fromEventHandler', () => {
         const result = await generator.next();
         expect(result.value).toBe(1);
         expect(result.done).toBeFalsy();
+        await generator.return(undefined); // Close generator for cleanup
     });
 
-    it('captures and yields multiple events in order', async () => {
+    test('captures and yields multiple events in order', async () => { // Changed 'it' to 'test'
         const generator = fromEventHandler<number>(
             emitter.on.bind(emitter),
             emitter.off.bind(emitter)
@@ -281,41 +284,38 @@ describe('fromEventHandler', () => {
         results.push((await generator.next()).value);
 
         expect(results).toEqual([1, 2]);
+        await generator.return(undefined); // Close generator
     });
 
-    it('removes event listeners when generator is closed', async () => {
-        const addSpy = jest.fn();
-        const removeSpy = jest.fn();
+    test('removes event listeners when generator is closed', async () => { // Changed 'it' to 'test'
+        const onSpy = jest.fn(emitter.on.bind(emitter));
+        const offSpy = jest.fn(emitter.off.bind(emitter));
 
-        let eventListener: (data: number) => void = () => { };
+        const generator = fromEventHandler<number>(onSpy, offSpy);
 
-        // Simulated event registration and removal, capturing the event listener
-        const on = (listener: (data: number) => void) => {
-            addSpy();
-            eventListener = listener;
-        };
-        const off = (listener: (data: number) => void) => {
-            removeSpy();
-        };
+        // Start consuming
+        const promise = generator.next();
 
-        const generator = fromEventHandler<number>(on, off);
+        // Emit after starting consumption but before closing
+        setTimeout(() => emitter.emit(1), 5);
 
-        // Simulate event emission to ensure 'on' function is triggered
-        setTimeout(() => eventListener(1), 10);
+        await promise; // Wait for the first event to ensure listener is attached
 
-        // Start consuming the generator to activate the 'on' registration
-        await generator.next()
-        await generator.return(undefined)
+        expect(emitter.listenerCount).toBe(1); // Listener should be attached
 
-        expect(addSpy).toHaveBeenCalledTimes(1);
-        expect(removeSpy).toHaveBeenCalledTimes(1);
+        // Close the generator
+        await generator.return(undefined);
+
+        expect(onSpy).toHaveBeenCalledTimes(1);
+        expect(offSpy).toHaveBeenCalledTimes(1);
+        expect(emitter.listenerCount).toBe(0); // Listener should be removed
     });
 });
 
 // fromEvent
 describe('fromEvent', () => {
     // Mock EventEmitter to simulate Node.js EventEmitter for testing purposes
-    class MockEventEmitter<T, E extends string = string> {
+    class MockNodeEventEmitter<T, E extends string = string> {
         private listeners: Map<E, ((data: T) => void)[]> = new Map();
 
         on(eventName: E, listener: (data: T) => void) {
@@ -330,17 +330,22 @@ describe('fromEvent', () => {
             if (index !== -1) {
                 eventListeners.splice(index, 1);
             }
-            this.listeners.set(eventName, eventListeners);
+            // No need to set back if empty, get handles it
         }
 
         emit(eventName: E, data: T) {
             const eventListeners = this.listeners.get(eventName) || [];
-            eventListeners.forEach((listener) => listener(data));
+            // Use slice to prevent issues if listener modifies the array during iteration
+            eventListeners.slice().forEach((listener) => listener(data));
+        }
+
+         listenerCount(eventName: E): number { // Helper for testing
+            return (this.listeners.get(eventName) || []).length;
         }
     }
 
-    it('captures and yields events from an EventEmitter', async () => {
-        const emitter = new MockEventEmitter<number, 'data'>();
+    test('captures and yields events from an EventEmitter', async () => { // Changed 'it' to 'test'
+        const emitter = new MockNodeEventEmitter<number, 'data'>();
         const generator = fromEvent<number, 'data'>(emitter, 'data');
 
         // Emit some data asynchronously
@@ -353,34 +358,84 @@ describe('fromEvent', () => {
         results.push((await generator.next()).value);
 
         expect(results).toEqual([1, 2]);
+        await generator.return(undefined); // Close generator
     });
 
-    it('removes event listeners when the generator is closed', async () => {
-        const addSpy = jest.fn();
-        const removeSpy = jest.fn();
+    test('removes event listeners when the generator is closed', async () => { // Changed 'it' to 'test'
+        const emitter = new MockNodeEventEmitter<number, 'data'>();
 
-        const emitter = new MockEventEmitter<number, 'data'>();
-
-        // Wrap original `on` and `off` with spies
-        emitter.on = jest.fn(emitter.on);
-        emitter.off = jest.fn(emitter.off);
+        // Spy on the actual methods
+        const onSpy = jest.spyOn(emitter, 'on');
+        const offSpy = jest.spyOn(emitter, 'off');
 
         const generator = fromEvent<number, 'data'>(emitter, 'data');
 
-        // Simulate event emission to ensure 'on' function is triggered
-        setTimeout(() => emitter.emit('data', 1), 10);
+        // Start consuming
+        const promise = generator.next();
 
-        await generator.next()
-        await generator.return(undefined)
+        // Emit after starting consumption but before closing
+        setTimeout(() => emitter.emit('data', 1), 5);
 
-        expect(emitter.on).toHaveBeenCalledTimes(1);
-        expect(emitter.off).toHaveBeenCalledTimes(1);
+        await promise; // Wait for the first event
+
+        expect(emitter.listenerCount('data')).toBe(1); // Listener should be attached
+
+        // Close the generator
+        await generator.return(undefined);
+
+        expect(onSpy).toHaveBeenCalledTimes(1);
+        expect(offSpy).toHaveBeenCalledTimes(1);
+        expect(emitter.listenerCount('data')).toBe(0); // Listener should be removed
+
+        // Restore spies
+        onSpy.mockRestore();
+        offSpy.mockRestore();
+    });
+
+     // Test with addListener/removeListener interface
+     test('works with addListener/removeListener interface', async () => {
+        class MockAltEventEmitter {
+            listeners = new Set<(data: any) => void>();
+            addListener(event: string, listener: (data: any) => void) {
+                if (event === 'altData') this.listeners.add(listener);
+            }
+            removeListener(event: string, listener: (data: any) => void) {
+                 if (event === 'altData') this.listeners.delete(listener);
+            }
+            emit(event: string, data: any) {
+                if (event === 'altData') {
+                     Array.from(this.listeners).forEach(l => l(data));
+                }
+            }
+             get listenerCount() { return this.listeners.size; }
+        }
+
+        const emitter = new MockAltEventEmitter();
+        const addSpy = jest.spyOn(emitter, 'addListener');
+        const removeSpy = jest.spyOn(emitter, 'removeListener');
+
+        const generator = fromEvent<string>(emitter, 'altData');
+
+        setTimeout(() => emitter.emit('altData', 'hello'), 10);
+
+        const result = await generator.next();
+        expect(result.value).toBe('hello');
+        expect(emitter.listenerCount).toBe(1);
+
+        await generator.return(undefined);
+
+        expect(addSpy).toHaveBeenCalledTimes(1);
+        expect(removeSpy).toHaveBeenCalledTimes(1);
+        expect(emitter.listenerCount).toBe(0);
+
+        addSpy.mockRestore();
+        removeSpy.mockRestore();
     });
 });
 
 // until
 describe('until', () => {
-    it('yields all values if predicate never true', async () => {
+    test('yields all values if predicate never true', async () => { // Changed 'it' to 'test'
         const source = asyncGenerator([1, 2, 3]);
         const results: number[] = [];
 
@@ -391,19 +446,19 @@ describe('until', () => {
         expect(results).toEqual([1, 2, 3]);
     });
 
-    it('stops yielding when predicate becomes true', async () => {
+    test('stops yielding when predicate becomes true (inclusive)', async () => { // Changed 'it' to 'test' and clarified behavior
         const source = asyncGenerator([1, 2, 3, 4, 5]);
         const results: number[] = [];
 
-        for await (const value of until(source, (x) => x >= 3)) {
+        for await (const value of until(source, (x) => x >= 3)) { // Predicate checks the *current* value
             results.push(value);
         }
 
-        expect(results).toEqual([1, 2, 3]);
+        expect(results).toEqual([1, 2, 3]); // Yields the value that satisfies the predicate, then stops
     });
 
-    it('yields nothing from an empty generator', async () => {
-        const source = asyncGenerator([]);
+    test('yields nothing from an empty generator', async () => { // Changed 'it' to 'test'
+        const source = asyncGenerator<number>([]); // Added type argument
         const results: number[] = [];
 
         for await (const value of until(source, (x) => x >= 3)) {
@@ -413,7 +468,7 @@ describe('until', () => {
         expect(results).toEqual([]);
     });
 
-    it('stops immediately if predicate true for first value', async () => {
+    test('stops immediately if predicate true for first value (inclusive)', async () => { // Changed 'it' to 'test' and clarified behavior
         const source = asyncGenerator([3, 4, 5]);
         const results: number[] = [];
 
@@ -421,6 +476,6 @@ describe('until', () => {
             results.push(value);
         }
 
-        expect(results).toEqual([3]);
+        expect(results).toEqual([3]); // Yields the first value, predicate is true, stops
     });
 });

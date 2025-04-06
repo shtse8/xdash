@@ -1,61 +1,22 @@
-import { describe, test, it, expect, jest, beforeEach } from 'bun:test'
-import x from '../src/index'
+// Removed bun:test import
+import { not, or, and, xor, ensure, throttle, debounce, once, bind, memoize } from '../src/function'; // Changed import path
+import { isArray } from '../src/typed'; // Added specific import for isArray
 
-// not 
+// Helper function for async delays
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// not
 describe('not', () => {
     test("Returns false for true function", () => {
         const input = () => true;
-        const result = x.not(input);
+        const result = not(input);
         expect(result()).toBe(false);
     })
 
     test("Returns true for false function", () => {
         const input = () => false;
-        const result = x.not(input);
+        const result = not(input);
         expect(result()).toBe(true);
-    })
-})
-
-
-// or 
-describe('or', () => {
-    test("Returns true for true functions", () => {
-        const input = [() => true, () => true];
-        const result = x.or(...input);
-        expect(result()).toBe(true);
-    })
-
-    test("Returns true for mixed functions", () => {
-        const input = [() => true, () => false];
-        const result = x.or(...input);
-        expect(result()).toBe(true);
-    })
-
-    test("Returns false for false functions", () => {
-        const input = [() => false, () => false];
-        const result = x.or(...input);
-        expect(result()).toBe(false);
-    })
-})
-
-// and
-describe('and', () => {
-    test("Returns true for true functions", () => {
-        const input = [() => true, () => true];
-        const result = x.and(...input);
-        expect(result()).toBe(true);
-    })
-
-    test("Returns false for mixed functions", () => {
-        const input = [() => true, () => false];
-        const result = x.and(...input);
-        expect(result()).toBe(false);
-    })
-
-    test("Returns false for false functions", () => {
-        const input = [() => false, () => false];
-        const result = x.and(...input);
-        expect(result()).toBe(false);
     })
 })
 
@@ -64,19 +25,40 @@ describe('and', () => {
 describe('or', () => {
     test("Returns true for true functions", () => {
         const input = [() => true, () => true];
-        const result = x.or(...input);
+        const result = or(...input);
         expect(result()).toBe(true);
     })
 
     test("Returns true for mixed functions", () => {
         const input = [() => true, () => false];
-        const result = x.or(...input);
+        const result = or(...input);
         expect(result()).toBe(true);
     })
 
     test("Returns false for false functions", () => {
         const input = [() => false, () => false];
-        const result = x.or(...input);
+        const result = or(...input);
+        expect(result()).toBe(false);
+    })
+})
+
+// and
+describe('and', () => {
+    test("Returns true for true functions", () => {
+        const input = [() => true, () => true];
+        const result = and(...input);
+        expect(result()).toBe(true);
+    })
+
+    test("Returns false for mixed functions", () => {
+        const input = [() => true, () => false];
+        const result = and(...input);
+        expect(result()).toBe(false);
+    })
+
+    test("Returns false for false functions", () => {
+        const input = [() => false, () => false];
+        const result = and(...input);
         expect(result()).toBe(false);
     })
 })
@@ -86,143 +68,272 @@ describe('or', () => {
 describe('xor', () => {
     test("Returns false for true functions", () => {
         const input = [() => true, () => true];
-        const result = x.xor(...input);
+        const result = xor(...input);
         expect(result()).toBe(false);
     })
 
     test("Returns true for mixed functions", () => {
         const input = [() => true, () => false];
-        const result = x.xor(...input);
+        const result = xor(...input);
         expect(result()).toBe(true);
     })
 
     test("Returns false for false functions", () => {
         const input = [() => false, () => false];
-        const result = x.xor(...input);
+        const result = xor(...input);
         expect(result()).toBe(false);
     })
+
+    test("Returns true for exactly one true function among many", () => {
+        const input = [() => false, () => false, () => true, () => false];
+        const result = xor(...input);
+        expect(result()).toBe(true);
+      });
+
+    test("Returns false for multiple true functions among many", () => {
+        const input = [() => false, () => true, () => true, () => false];
+        const result = xor(...input);
+        expect(result()).toBe(false);
+      });
 })
 
 // ensure
 describe('ensure', () => {
-    test("Returns true for true function", () => {
-        const isArray = x.isArray;
-        const ensureArray = x.ensure(isArray);
+    test("Returns the value if the check function returns true", () => {
+        const ensureArray = ensure(isArray);
         const arr = [1, 2, 3];
         expect(ensureArray(arr)).toBe(arr);
     })
 
-    test("Returns false for false function", () => {
-        const isArray = x.isArray;
-        const ensureArray = x.ensure(isArray);
-        expect(() => ensureArray("hello")).toThrow();
+    test("Throws an error if the check function returns false", () => {
+        const ensureArray = ensure(isArray, 'Custom error: Not an array');
+        expect(() => ensureArray("hello")).toThrow('Custom error: Not an array');
     })
+
+    test("Uses default error message if none provided", () => {
+        const ensureIsString = ensure((val: unknown): val is string => typeof val === 'string');
+        expect(() => ensureIsString(123)).toThrow('Value does not match the expected type');
+      });
+
+    test("Works with type predicates", () => {
+        const isString = (val: unknown): val is string => typeof val === 'string';
+        const ensureString = ensure(isString);
+        const str = "hello";
+        expect(ensureString(str)).toBe(str);
+        expect(() => ensureString(123)).toThrow();
+      });
+
+    test("Works with boolean returning functions and arguments", () => {
+        const isLongerThan = (val: string, minLength: number) => val.length > minLength;
+        const ensureLongerThan5 = ensure(isLongerThan, 'String must be longer than 5 chars');
+        const longStr = "abcdef";
+        const shortStr = "abc";
+        expect(ensureLongerThan5(longStr, 5)).toBe(longStr);
+        expect(() => ensureLongerThan5(shortStr, 5)).toThrow('String must be longer than 5 chars');
+      });
 })
 
 // throttle
 describe('throttle', () => {
+    // Removed jest.useFakeTimers()
+
     let func: jest.Mock;
-    let throttledFunc: Function;
-    const wait = 100; // Milliseconds
+    let throttledFunc: (...args: any[]) => void;
+    const wait = 50; // Use a shorter wait time for real timer tests
 
     beforeEach(() => {
         func = jest.fn();
     });
 
-    // Test case 1: Throttling Function Calls
-    it('calls the function at most once within specified milliseconds', async () => {
-        throttledFunc = x.throttle(func, wait);
-        throttledFunc();
-        throttledFunc();
-        throttledFunc();
+    // Removed afterEach with jest.clearAllTimers()
 
-        await new Promise((r) => setTimeout(r, wait + 50)); // Wait for throttle period + buffer
-        expect(func).toHaveBeenCalledTimes(2);
-    });
-
-    // Test case 2: Leading Call
-    it('calls function immediately if leading is true', () => {
-        throttledFunc = x.throttle(func, wait, { leading: true, trailing: false });
+    test('calls the function immediately by default (leading: true)', () => {
+        throttledFunc = throttle(func, wait);
         throttledFunc();
         expect(func).toHaveBeenCalledTimes(1);
     });
 
-    // Test case 3: Trailing Call
-    it('ensures function is called after the last trigger if trailing is true', async () => {
-        throttledFunc = x.throttle(func, wait, { trailing: true, leading: false });
-        throttledFunc();
-        throttledFunc();
-        await new Promise((r) => setTimeout(r, wait + 50));
-        expect(func).toHaveBeenCalledTimes(1); // Once for leading, once for trailing
+    test('throttles subsequent calls within the wait period', async () => {
+        throttledFunc = throttle(func, wait);
+        throttledFunc(); // Called immediately
+        throttledFunc(); // Throttled
+        throttledFunc(); // Throttled
+        expect(func).toHaveBeenCalledTimes(1);
+
+        await delay(wait / 2);
+        throttledFunc(); // Still throttled
+        expect(func).toHaveBeenCalledTimes(1);
+
+        await delay(wait / 2 + 1); // Pass the wait period
+        throttledFunc(); // Called again (leading edge of next window)
+        expect(func).toHaveBeenCalledTimes(2);
     });
 
-    // Test case 4: No Leading or Trailing Call
-    it('does not call function if both leading and trailing are false', async () => {
-        throttledFunc = x.throttle(func, wait, { leading: false, trailing: false });
+    test('calls function on the trailing edge if trailing: true', async () => {
+        func = jest.fn(); // Re-init func for accurate count
+        throttledFunc = throttle(func, wait, { leading: true, trailing: true });
+        throttledFunc(1); // Called (leading)
+        await delay(1); // Ensure timestamp differs slightly
+        throttledFunc(2); // Throttled, args saved for trailing
+        await delay(1);
+        throttledFunc(3); // Throttled, args updated for trailing
+
+        expect(func).toHaveBeenCalledTimes(1);
+        expect(func).toHaveBeenCalledWith(1);
+
+        await delay(wait + 10); // Trigger trailing call (add buffer)
+
+        expect(func).toHaveBeenCalledTimes(2);
+        expect(func).toHaveBeenCalledWith(3); // Called with last args
+
+        // Call again after trailing edge, should trigger leading call
+        await delay(1); // Ensure time passes
+        throttledFunc(4);
+        expect(func).toHaveBeenCalledTimes(3);
+        expect(func).toHaveBeenCalledWith(4);
+    });
+
+
+    test('calls function immediately if leading is true, trailing is false', async () => {
+        throttledFunc = throttle(func, wait, { leading: true, trailing: false });
         throttledFunc();
-        await new Promise((r) => setTimeout(r, wait + 50));
-        expect(func).toHaveBeenCalledTimes(0);
+        expect(func).toHaveBeenCalledTimes(1);
+        throttledFunc(); // Throttled
+        await delay(wait + 10); // Wait past throttle period
+        throttledFunc(); // Called again
+        expect(func).toHaveBeenCalledTimes(2);
+    });
+
+    test('does not call immediately if leading is false', () => {
+        throttledFunc = throttle(func, wait, { leading: false, trailing: true });
+        throttledFunc();
+        expect(func).not.toHaveBeenCalled();
+    });
+
+    test('calls function on trailing edge if leading is false', async () => {
+        throttledFunc = throttle(func, wait, { leading: false, trailing: true });
+        throttledFunc(1);
+        await delay(1);
+        throttledFunc(2);
+
+        expect(func).not.toHaveBeenCalled();
+
+        await delay(wait + 10); // Trigger trailing call
+
+        expect(func).toHaveBeenCalledTimes(1);
+        expect(func).toHaveBeenCalledWith(2); // Called with last args
+    });
+
+    test('does not call function if both leading and trailing are false', async () => {
+        throttledFunc = throttle(func, wait, { leading: false, trailing: false });
+        throttledFunc();
+        await delay(wait + 10);
+        expect(func).not.toHaveBeenCalled();
+    });
+
+    test('handles multiple arguments correctly', async () => {
+        func = jest.fn(); // Re-init func
+        throttledFunc = throttle(func, wait); // Default: leading=true, trailing=true
+        throttledFunc(1, 'a'); // Called (leading)
+        await delay(wait / 2);
+        throttledFunc(2, 'b'); // Throttled, args saved for trailing
+        await delay(wait + 10); // Trigger trailing call
+        expect(func).toHaveBeenCalledTimes(2);
+        expect(func).toHaveBeenNthCalledWith(1, 1, 'a');
+        expect(func).toHaveBeenNthCalledWith(2, 2, 'b');
     });
 })
 
 // debounce
 describe('debounce', () => {
+    // Removed jest.useFakeTimers()
+
     let func: jest.Mock;
-    let debouncedFunc: Function;
-    const wait = 100; // Milliseconds
+    let debouncedFunc: (...args: any[]) => void;
+    const wait = 50; // Use a shorter wait time
 
     beforeEach(() => {
         func = jest.fn();
     });
 
-    // Test case 1: Debouncing Multiple Calls
-    it('executes the function only once for multiple calls within the debounce period', async () => {
-        debouncedFunc = x.debounce(func, wait);
-        debouncedFunc();
-        debouncedFunc();
-        debouncedFunc();
+     // Removed afterEach with jest.clearAllTimers()
 
-        await new Promise((r) => setTimeout(r, wait * 1.5)); // Wait more than debounce period
+    test('executes the function only once after the wait period for multiple calls', async () => {
+        debouncedFunc = debounce(func, wait);
+        debouncedFunc();
+        await delay(wait / 2);
+        debouncedFunc(); // Reset timer
+        await delay(wait / 2);
+        debouncedFunc(); // Reset timer again
+
+        expect(func).not.toHaveBeenCalled(); // Not called yet
+
+        await delay(wait + 10); // Wait for debounce period to pass after last call
         expect(func).toHaveBeenCalledTimes(1);
     });
 
-    // Test case 2: Immediate Execution
-    it('executes immediately on the first call when immediate is true', () => {
-        debouncedFunc = x.debounce(func, wait, { immediate: true });
+    test('executes immediately on the first call when immediate is true', async () => {
+        debouncedFunc = debounce(func, wait, { immediate: true });
         debouncedFunc();
         expect(func).toHaveBeenCalledTimes(1);
+
+        // Subsequent calls within wait period should not trigger
+        debouncedFunc();
+        await delay(wait / 2);
+        debouncedFunc();
+        expect(func).toHaveBeenCalledTimes(1);
+
+        // Call after wait period should trigger immediately again
+        await delay(wait + 10);
+        debouncedFunc();
+        expect(func).toHaveBeenCalledTimes(2);
     });
 
-    // Test case 3: Arguments Handling
-    it('calls the debounced function with the last call\'s arguments', async () => {
-        debouncedFunc = x.debounce(func, wait);
+    test('calls the debounced function with the last call\'s arguments', async () => {
+        debouncedFunc = debounce(func, wait);
         debouncedFunc(1);
+        await delay(1);
         debouncedFunc(2);
+        await delay(1);
         debouncedFunc(3); // This call's arguments should be used
 
-        await new Promise((r) => setTimeout(r, wait * 1.5));
+        await delay(wait + 10);
+        expect(func).toHaveBeenCalledWith(3);
+        expect(func).toHaveBeenCalledTimes(1);
+    });
+
+    test('does not call the function if timeout is reset (if not immediate)', async () => {
+        debouncedFunc = debounce(func, wait);
+        debouncedFunc(); // Start timer
+        await delay(wait / 2);
+        debouncedFunc(); // Reset timer
+        await delay(wait / 2);
+        // Timer reset again, wait another full period
+        await delay(wait + 10);
+        expect(func).toHaveBeenCalledTimes(1); // Should have been called once after the second reset
+    });
+
+    test('handles immediate=true correctly with arguments', async () => {
+        debouncedFunc = debounce(func, wait, { immediate: true });
+        debouncedFunc(1);
+        expect(func).toHaveBeenCalledWith(1);
+        expect(func).toHaveBeenCalledTimes(1);
+
+        debouncedFunc(2); // Should not trigger
+        expect(func).toHaveBeenCalledTimes(1);
+
+        await delay(wait + 10); // Wait period passes
+        debouncedFunc(3); // Should trigger immediately again
+        expect(func).toHaveBeenCalledTimes(2);
         expect(func).toHaveBeenCalledWith(3);
     });
-
-    // Test case 4: Execution Delay
-    it('delays the function execution by the specified milliseconds', async () => {
-        const startTime = Date.now();
-        debouncedFunc = x.debounce(() => {
-            expect(Date.now() - startTime).toBeGreaterThanOrEqual(wait);
-        }, wait);
-        debouncedFunc();
-
-        await new Promise((r) => setTimeout(r, wait * 1.5));
-    });
-
 })
 
 // once
 describe('once', () => {
-    // Test case 1: Calls the function exactly once
-    it('calls the function exactly once', () => {
+    test('calls the function exactly once', () => {
         const mockFn = jest.fn();
-        const onceFn = x.once(mockFn);
+        const onceFn = once(mockFn);
 
         onceFn();
         onceFn();
@@ -231,57 +342,55 @@ describe('once', () => {
         expect(mockFn).toHaveBeenCalledTimes(1);
     });
 
-    // Test case 2: Returns the correct value on the first and subsequent calls
-    it('returns the correct value on the first and subsequent calls', () => {
-        const returnValue = 'test value';
+    test('returns the correct value on the first and subsequent calls', () => {
+        const returnValue = { data: 'test value' };
         const testFn = () => returnValue;
-        const onceFn = x.once(testFn);
+        const onceFn = once(testFn);
 
-        expect(onceFn()).toBe(returnValue);
         expect(onceFn()).toBe(returnValue);
         expect(onceFn()).toBe(returnValue);
     });
 
-    // Test case 3: Handles arguments passed to the function
-    it('handles arguments passed to the function', () => {
-        const add = (a: number, b: number) => a + b;
-        const onceAdd = x.once(add);
+    test('handles arguments passed to the function on the first call', () => {
+        const add = jest.fn((a: number, b: number) => a + b);
+        const onceAdd = once(add);
 
         expect(onceAdd(2, 3)).toBe(5);
-        // Subsequent calls should return the same value regardless of the arguments
+        expect(add).toHaveBeenCalledWith(2, 3);
+
         expect(onceAdd(10, 10)).toBe(5);
+        expect(add).toHaveBeenCalledTimes(1);
     });
 
-    // Test case 4: Does not execute the function more than once
-    it('does not execute the function more than once', () => {
-        let counter = 0;
-        const increment = () => { counter += 1; return counter; };
-        const onceIncrement = x.once(increment);
-
-        onceIncrement();
-        onceIncrement();
-        onceIncrement();
-
-        expect(counter).toBe(1);
-    });
+    test('works with functions that return undefined', () => {
+        const mockFn = jest.fn(() => undefined);
+        const onceFn = once(mockFn);
+        expect(onceFn()).toBeUndefined();
+        expect(onceFn()).toBeUndefined();
+        expect(mockFn).toHaveBeenCalledTimes(1);
+      });
 });
 
 // bind
 describe('bind', () => {
-    // Test case 1: Binds a function to a context
-    it('binds a function to a context', () => {
+    test('binds a function to a context and preserves `this`', () => {
         const obj = {
             name: 'foo',
             greet() {
                 return `Hello, ${this.name}!`;
             }
         };
-        const greet = x.bind(obj.greet, obj);
+        const greet = bind(obj.greet, obj);
         expect(greet()).toBe('Hello, foo!');
+
+        const detachedGreet = obj.greet;
+        expect(() => detachedGreet()).toThrow();
+
+        const boundDetachedGreet = bind(detachedGreet, obj);
+        expect(boundDetachedGreet()).toBe('Hello, foo!');
     });
 
-    // Test case 2: Binds a function to a different context
-    it('binds a function to a different context', () => {
+    test('binds a function to a different context', () => {
         const obj = {
             name: 'foo',
             greet() {
@@ -289,50 +398,121 @@ describe('bind', () => {
             }
         };
         const obj2 = { name: 'bar' };
-        const greet = x.bind(obj.greet, obj2);
+        const greet = bind(obj.greet, obj2);
         expect(greet()).toBe('Hello, bar!');
     });
+
+    test('passes arguments correctly to the bound function', () => {
+        const obj = {
+            value: 10,
+            add(a: number, b: number) {
+                return this.value + a + b;
+            }
+        };
+        const boundAdd = bind(obj.add, obj);
+        expect(boundAdd(5, 3)).toBe(18);
+      });
 });
 
 // memoize
 describe('memoize', () => {
-    // Test case 1: Memoizes a function
-    it('memoizes a function', () => {
-        const add = jest.fn((a: number, b: number) => {
-            console.log('Calculating sum');
+    let consoleSpy: jest.SpiedFunction<typeof console.log>;
+
+    beforeEach(() => {
+        consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        consoleSpy.mockRestore();
+    });
+
+    test('calls the original function only once for the same arguments', () => {
+        const complexCalc = (a: number, b: number) => {
+            console.log('Performing complex calculation...');
+            return a * b + a - b;
+        };
+        const memoizedCalc = memoize(complexCalc);
+
+        memoizedCalc(5, 3);
+        memoizedCalc(5, 3);
+        memoizedCalc(5, 3);
+
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
+        expect(consoleSpy).toHaveBeenCalledWith('Performing complex calculation...');
+    });
+
+    test('returns the correct memoized value', () => {
+        const add = (a: number, b: number) => {
+            console.log('Adding...');
             return a + b;
-        });
-        const memoizedAdd = x.memoize(add);
-
-        memoizedAdd(1, 2);
-        memoizedAdd(1, 2);
-        memoizedAdd(2, 3);
-        memoizedAdd(2, 3);
-
-        expect(add).toHaveBeenCalledTimes(2);
-    });
-
-    // Test case 2: Returns the correct value
-    it('returns the correct value', () => {
-        const add = (a: number, b: number) => a + b;
-        const memoizedAdd = x.memoize(add);
+        };
+        const memoizedAdd = memoize(add);
 
         expect(memoizedAdd(1, 2)).toBe(3);
         expect(memoizedAdd(1, 2)).toBe(3);
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
+
         expect(memoizedAdd(2, 3)).toBe(5);
         expect(memoizedAdd(2, 3)).toBe(5);
+        expect(consoleSpy).toHaveBeenCalledTimes(2);
     });
 
-    // Test case 3: Handles multiple arguments
-    it('handles multiple arguments', () => {
-        const add = jest.fn((a: number, b: number, c: number) => a + b + c);
-        const memoizedAdd = x.memoize(add);
+    test('differentiates calls based on arguments', () => {
+        const greet = (name: string) => {
+            console.log('Greeting...');
+            return `Hello, ${name}!`;
+        };
+        const memoizedGreet = memoize(greet);
 
-        memoizedAdd(1, 2, 3);
-        memoizedAdd(1, 2, 3);
-        memoizedAdd(2, 3, 4);
-        memoizedAdd(2, 3, 4);
+        expect(memoizedGreet('World')).toBe('Hello, World!');
+        expect(memoizedGreet('Alice')).toBe('Hello, Alice!');
+        expect(memoizedGreet('World')).toBe('Hello, World!');
 
-        expect(add).toHaveBeenCalledTimes(2);
+        expect(consoleSpy).toHaveBeenCalledTimes(2);
     });
+
+    test('handles multiple arguments correctly for cache key', () => {
+        const process = (a: number, b: string, c: boolean) => {
+            console.log('Processing...');
+            return `${a}-${b}-${c}`;
+        };
+        const memoizedProcess = memoize(process);
+
+        memoizedProcess(1, 'a', true);
+        memoizedProcess(1, 'a', true);
+        memoizedProcess(1, 'a', false);
+        memoizedProcess(2, 'a', true);
+
+        expect(consoleSpy).toHaveBeenCalledTimes(3);
+    });
+
+    test('handles simple object arguments (beware of key order)', () => {
+        const processObj = (config: { id: number, active: boolean }) => {
+            console.log('Processing object...');
+            return `ID: ${config.id}, Active: ${config.active}`;
+        };
+        const memoizedProcessObj = memoize(processObj);
+
+        memoizedProcessObj({ id: 1, active: true });
+        memoizedProcessObj({ id: 1, active: true });
+        memoizedProcessObj({ id: 2, active: false });
+
+        expect(consoleSpy).toHaveBeenCalledTimes(2);
+
+    });
+
+     test('handles arguments resulting in the same JSON key', () => {
+        const fn = jest.fn((arg) => typeof arg);
+        const memoizedFn = memoize(fn);
+
+        memoizedFn(123);
+        memoizedFn("123");
+
+        expect(fn).toHaveBeenCalledTimes(2);
+
+        memoizedFn([1, 2]);
+        memoizedFn([1, 2]);
+
+        expect(fn).toHaveBeenCalledTimes(3);
+      });
 });

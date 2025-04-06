@@ -30,7 +30,11 @@ export class Chain<I, O> {
         ]);
     }
 
-    value(): O {
+    /**
+     * Executes the pipeline and returns the final value.
+     * @returns The final value after all operations have been applied.
+     */
+    unwrap(): O {
         return this.ops.reduce((acc, fn) => fn(acc), this.initialValue) as unknown as O;
     }
 }

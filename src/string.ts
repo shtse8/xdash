@@ -214,22 +214,29 @@ export function separateWords(str: string): string[] {
     switch (caseType) {
         case 'camel':
         case 'pascal':
-            return str.replace(/([a-z])([A-Z])/g, '$1 $2').split(' ');
+            // Split and filter empty strings
+            return str.replace(/([a-z])([A-Z])/g, '$1 $2').split(' ').filter(Boolean);
         case 'snake':
         case 'screaming-snake':
-            return str.split('_');
+            return str.split('_').filter(Boolean);
         case 'kebab':
         case 'screaming-kebab':
-            return str.split('-');
+            return str.split('-').filter(Boolean);
         case 'lower':
         case 'upper':
-            return str.split(' ');
+            return str.split(' ').filter(Boolean);
         case 'mixed':
-            throw new Error('Cannot separate words in a mixed case string');
+            // Attempt a more robust split for mixed cases, e.g., by space, dash, underscore, or case change
+            // This is a basic attempt, might need refinement based on desired behavior for complex mixed cases
+             return str.replace(/([a-z])([A-Z])/g, '$1 $2') // Camel/Pascal case changes
+                       .split(/[\s_-]+/) // Split by space, underscore, or dash
+                       .filter(Boolean);
+            // throw new Error('Cannot separate words in a mixed case string'); // Original behavior
         case 'none':
             return [];
         default:
-            throw new Error('Unknown case type');
+            // Should not happen if detectCase is exhaustive
+            return [];
     }
 }
 

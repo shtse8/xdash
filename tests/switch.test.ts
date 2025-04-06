@@ -1,8 +1,8 @@
-import { describe, test, it, expect } from 'bun:test'
-import { inlineSwitch } from '../src/index';
+// Removed bun:test import
+import { inlineSwitch } from '../src/switch'; // Changed import path
 
 describe('InlineSwitch', () => {
-    it('should correctly handle a matching case', () => {
+    test('should correctly handle a matching case', () => { // Changed 'it' to 'test'
         const result = inlineSwitch('apple')
             .case('apple', () => 'red')
             .case('banana', () => 'yellow')
@@ -11,7 +11,7 @@ describe('InlineSwitch', () => {
         expect(result).toBe('red');
     });
 
-    it('should return the default case when no cases match', () => {
+    test('should return the default case when no cases match', () => { // Changed 'it' to 'test'
         const result = inlineSwitch('kiwi')
             .case('apple', () => 'red')
             .case('banana', () => 'yellow')
@@ -21,7 +21,7 @@ describe('InlineSwitch', () => {
         expect(result).toBe('unknown color');
     });
 
-    it('should handle mixed return types', () => {
+    test('should handle mixed return types', () => { // Changed 'it' to 'test'
         const result = inlineSwitch('banana')
             .case('apple', () => 42)
             .case('banana', () => true)
@@ -29,24 +29,44 @@ describe('InlineSwitch', () => {
             .execute();
 
         expect(result).toBe(true);
+
+        const result2 = inlineSwitch('orange') // Test default case with mixed types
+            .case('apple', () => 42)
+            .case('banana', () => true)
+            .default(() => null)
+            .execute();
+        expect(result2).toBeNull();
     });
 
-    it('should throw an error if no cases match and no default case is provided', () => {
-        const result = inlineSwitch('kiwi')
+    test('should throw an error if no cases match and no default case is provided', () => { // Changed 'it' to 'test' and assertion
+        const switchInstance = inlineSwitch('kiwi')
             .case('apple', () => 'red')
-            .case('banana', () => 'yellow')
-            .execute()
+            .case('banana', () => 'yellow');
 
-        expect(result).toBeUndefined();
+        // Expect execute() to throw the specific error
+        expect(() => switchInstance.execute()).toThrow('No matching case found for value: kiwi and no default case was provided.');
     });
 
-    it('should prevent setting multiple default cases', () => {
+    test('should prevent setting multiple default cases', () => { // Changed 'it' to 'test'
         expect(() => {
             inlineSwitch('kiwi')
                 .default(() => 'default 1')
-                // @ts-ignore
-                .default(() => 'default 2')
-                .execute();
+                // @ts-expect-error Testing runtime prevention of multiple defaults
+                .default(() => 'default 2');
         }).toThrow("Default case already set.");
+    });
+
+    test('should handle different value types for matching', () => {
+        const resultNum = inlineSwitch(10)
+            .case(5, () => 'five')
+            .case(10, () => 'ten')
+            .execute();
+        expect(resultNum).toBe('ten');
+
+        const resultBool = inlineSwitch(false)
+            .case(true, () => 'is true')
+            .case(false, () => 'is false')
+            .execute();
+        expect(resultBool).toBe('is false');
     });
 });

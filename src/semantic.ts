@@ -50,53 +50,90 @@ export function semanticSlice(str: string, len: number, options: {
 } = {}) {
     // Destructuring options with default values
     const {
-        sliceOnPunctuation = true, // Slice at punctuation
-        sliceOnSpace = true, // Slice at spaces
-        sliceOnCjk = true, // Slice at CJK (Chinese, Japanese, Korean) characters
-        sliceOnNumber = false, // Slice at numeric characters
-        ellipsis = false, // Add an ellipsis (...) at the end if the text is sliced
-        ellipsisSymbol = '…', // Symbol to use for the ellipsis
-        includeEllipsis = true, // Whether the ellipsis symbol should be included in the length calculation
-        trimEnd = true, // Trim trailing spaces at the end of the sliced string
-        trimStart = true, // Trim leading spaces at the beginning of the string
+        sliceOnPunctuation = true,
+        sliceOnSpace = true,
+        sliceOnCjk = true,
+        sliceOnNumber = false, // Keep default as false
+        ellipsis = false,
+        ellipsisSymbol = '…',
+        includeEllipsis = true,
+        trimEnd = true,
+        trimStart = true,
     } = options;
 
-    // Trim the start of the string if required
     if (trimStart) str = str.trimStart();
 
-    // Constructing the regex pattern based on the provided options
-    const separators = [
-        sliceOnPunctuation ? regexMap.punctuation : undefined,
-        sliceOnCjk ? regexMap.cjk : undefined,
-        sliceOnNumber ? regexMap.number : undefined,
-        sliceOnSpace ? regexMap.space : undefined,
-        '$', // End of string
-    ].filter(Boolean).join('|');
-
-    // Calculate the effective length of the string slice, considering the ellipsis symbol if included
-    const ellipsisLen = includeEllipsis && ellipsis ? ellipsisSymbol.length : 0;
-    const effectiveLength = Math.max(0, len - ellipsisLen);
-
-    // Regex to match up to the effective length, optionally stopping at a separator if present
-    const regex = new RegExp(`^(.{0,${effectiveLength}})(${separators})`, 'su');
-
-    let match = str.match(regex);
-
-    // If no match is found, return an empty string
-    if (!match) return '';
-
-    // Extract the matched substring
-    let result = match[1];
-    // Trim the end of the string if required
-    if (trimEnd) result = result.trimEnd();
-
-    // Append the ellipsis symbol if the original string exceeds the specified length or ends right before a separator
-    if (ellipsis && (str.length > len || match[2])) {
-        result += ellipsisSymbol;
+    // Handle zero or negative length early
+    if (len <= 0) {
+        // If ellipsis is enabled and included in length, it might still be added if len allows
+        if (ellipsis && includeEllipsis && ellipsisSymbol.length > 0 && len >= ellipsisSymbol.length) {
+             return ellipsisSymbol; // Special case: len allows only ellipsis
+        }
+         // Otherwise, return empty string for len <= 0
+        return "";
     }
 
-    // Return the processed string
-    return result;
+    const ellipsisLen = ellipsis ? ellipsisSymbol.length : 0;
+    // Calculate max length for content *before* adding ellipsis
+    const maxContentLen = includeEllipsis ? Math.max(0, len - ellipsisLen) : len;
+
+    // If the original string is already short enough
+    if (str.length <= len && (!ellipsis || str.length <= maxContentLen)) {
+         return trimEnd ? str.trimEnd() : str;
+    }
+
+    // Initial slice based on maxContentLen
+    let slicedStr = str.slice(0, maxContentLen);
+    let finalSlice = slicedStr; // Default to this if no separator found
+
+    // Build separator regex
+    const separatorChars: string[] = [];
+    if (sliceOnPunctuation) separatorChars.push('\\p{P}');
+    // Treat each CJK char as a potential break point if sliceOnCjk is true
+    if (sliceOnCjk) separatorChars.push('\\p{sc=Han}', '\\p{sc=Hiragana}', '\\p{sc=Hangul}');
+    if (sliceOnNumber) separatorChars.push('\\p{N}');
+    if (sliceOnSpace) separatorChars.push('\\s');
+
+    if (separatorChars.length > 0 && slicedStr.length > 0) { // Only search if there are separators and content
+        const separatorRegex = new RegExp(`(${separatorChars.join('|')})`, 'gu');
+        let lastSeparatorIndex = -1;
+        let match;
+
+        // Find the index of the last separator *within* the initially sliced string
+        // We need to reset lastIndex for each search if using global flag, or just search without global
+        const nonGlobalSeparatorRegex = new RegExp(`(${separatorChars.join('|')})`, 'u');
+        for (let i = slicedStr.length -1; i >= 0; i--) {
+            if (nonGlobalSeparatorRegex.test(slicedStr[i])) {
+                lastSeparatorIndex = i;
+                break;
+            }
+        }
+
+        if (lastSeparatorIndex !== -1) {
+            // Truncate *before* the last separator found
+            finalSlice = slicedStr.slice(0, lastSeparatorIndex);
+        }
+        // If no separator found, finalSlice remains the initially sliced string
+    }
+
+    // Trim the end *after* potential truncation
+    if (trimEnd) finalSlice = finalSlice.trimEnd();
+
+    // Determine if ellipsis should be added
+    // Add ellipsis if the original string is longer than the *target* length 'len'
+    // AND if the final content slice is actually shorter than the original string
+    // (to avoid adding ellipsis if the string wasn't actually truncated).
+    let needsEllipsis = ellipsis && str.length > len && finalSlice.length < str.length;
+
+    // If includeEllipsis is false, we might need to shorten finalSlice further
+    if (ellipsis && !includeEllipsis && finalSlice.length + ellipsisLen > len) {
+        const availableLen = Math.max(0, len - ellipsisLen);
+        finalSlice = finalSlice.slice(0, availableLen);
+        if (trimEnd) finalSlice = finalSlice.trimEnd(); // Trim again
+        needsEllipsis = true; // Ensure ellipsis is added after shortening
+    }
+
+    return needsEllipsis ? finalSlice + ellipsisSymbol : finalSlice;
 }
 
 

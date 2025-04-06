@@ -1,4 +1,7 @@
-export class InlineSwitch<T, R = never, E = undefined> {
+// R represents the union of return types from .case()
+// E represents the return type from .default()
+// If no default is provided, E remains 'never' initially
+export class InlineSwitch<T, R = never, E = never> {
     private cases = new Map<T, () => any>();
     private defaultCase?: () => any;
 
@@ -11,7 +14,8 @@ export class InlineSwitch<T, R = never, E = undefined> {
     }
 
     // Method to set the default case
-    default<U>(result: () => U): Omit<InlineSwitch<T, R | U, never>, 'default'> {
+    // When default is called, E becomes U, and we omit 'default' method
+    default<U>(result: () => U): Omit<InlineSwitch<T, R, U>, 'default'> {
         if (this.defaultCase) {
             throw new Error("Default case already set.");
         }
@@ -20,17 +24,22 @@ export class InlineSwitch<T, R = never, E = undefined> {
     }
 
     // Method to execute the switch
+    // Execute returns the type from a matching case (R) or the default case (E)
+    // If no default case is provided (E is never) and no case matches, it throws an error.
     execute(): R | E {
-        const result = this.cases.get(this.value);
-        if (result) {
-            return result();
+        const caseFn = this.cases.get(this.value);
+        if (caseFn) {
+            return caseFn();
         }
 
         if (this.defaultCase) {
             return this.defaultCase();
         }
 
-        return undefined as any;
+        // If we reach here, no case matched and no default was provided.
+        throw new Error(`No matching case found for value: ${this.value} and no default case was provided.`);
+        // The return type R | E is correct because if E is never, and no R matches,
+        // the function throws, satisfying the type contract.
     }
 }
 

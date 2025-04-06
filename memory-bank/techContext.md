@@ -1,17 +1,25 @@
-<!-- Version: 0.2 | Last Updated: 2025-04-06 -->
+<!-- Version: 0.3 | Last Updated: 2025-04-06 -->
 # Tech Context: xdash
 
-*   **Language**: TypeScript (Peer dependency: `^5.0.0`)
-*   **Runtime/Build Tool**: Bun (Used for `bun test`, `bun build.ts`)
+*   **Language**: TypeScript (`^5.0.0`)
+*   **Runtime/Build Tool**: Bun
 *   **Package Manager Compatibility**: npm, yarn, pnpm, bun
+*   **Testing Framework**: Jest
+*   **Documentation Generator**: VitePress
+*   **CI/CD Platform**: GitHub Actions
+*   **Benchmarking Tool**: TBD (e.g., `benny`, `benchmark.js`)
 *   **Key Libraries/Frameworks (Dev)**: 
-    *   Astro (`astro`): Likely for building the documentation website.
-    *   TypeDoc (`typedoc`, `typedoc-plugin-markdown`): For generating API documentation from TSDoc comments.
-    *   Release It (`release-it`): For automating the package release process.
-    *   Consola (`consola`): Logging utility (likely used in build script).
-    *   Bun DTS Plugin (`@anymud/bun-plugin-dts`): For generating `.d.ts` files during the Bun build.
-*   **Testing**: Bun Test runner (`bun test`). Test files located in `tests/`.
-*   **Build Process**: Custom script `build.ts` executed via `bun build.ts`. Outputs ESM modules and type definitions to the `dist/` directory.
-*   **Dependencies**: No runtime dependencies. `typescript` is a peer dependency. All other dependencies are `devDependencies`.
+    *   Jest (`jest`, `@types/jest`, `ts-jest` or Bun preset)
+    *   VitePress (`vitepress`, `vue`)
+    *   Bun DTS Plugin (`@anymud/bun-plugin-dts`)
+    *   Consola (`consola`)
+*   **Build Process**: Custom script `build.ts` via `bun build.ts`. Outputs ESM modules and `.d.ts` files to `dist/`.
+*   **Testing Process**: `bun test` (or equivalent Jest command via npm script) executed by CI/CD.
+*   **Documentation Process**: VitePress build (`docs:build` script) executed by CI/CD.
+*   **Deployment**: 
+    *   Package: Published to npm via GitHub Actions.
+    *   Docs: Deployed to GitHub Pages via GitHub Actions.
+*   **Dependencies**: No runtime dependencies. `typescript` is a peer dependency.
 *   **Licensing**: MIT License.
 *   **Repository**: GitHub (github.com/shtse8/xdash).
+*   **Deprecated Tech**: TypeDoc, Astro (for docs), release-it.

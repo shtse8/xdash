@@ -265,13 +265,12 @@ export async function* filter<T>(gen: AsyncGenerator<T>, predicate: (value: T) =
 }
 
 /**
- * Takes the first `n` values from an `AsyncGenerator`. This function takes an `AsyncGenerator`
- * and a number `n` and returns an `AsyncGenerator` that yields the first `n` values of the input
- * generator.
+ * Yields values from an `AsyncGenerator` until the predicate function returns true for a yielded value.
+ * The value that satisfies the predicate is included in the output.
  *
  * @param gen - The input `AsyncGenerator`.
- * @param n - The number of values to take from the input generator.
- * @returns An `AsyncGenerator` that yields the first `n` values of the input generator.
+ * @param predicate - The predicate function. The generator stops after yielding the first value for which this function returns true.
+ * @returns An `AsyncGenerator` that yields values until the predicate is met.
  * 
  * @example
  * ```typescript

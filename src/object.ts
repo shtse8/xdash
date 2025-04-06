@@ -108,16 +108,19 @@ export function filterKeys<T>(obj: Record<string, T>, fn: (key: string, value: T
 }
 
 /**
- * Inverts the keys and values of an object.
- * @param obj object to invert
- * @returns the inverted object
+ * Inverts the keys and values of an object. If multiple keys share the same value, the last key encountered will overwrite previous ones.
+ * Values that are not strings, numbers, or symbols might be coerced into strings when used as keys.
+ * @param obj object to invert, assumes values are suitable for use as keys (string, number, symbol).
+ * @returns the inverted object where original values become keys and original keys become values.
  * @example
  * invert({ a: 'hello', b: 'world' }) // returns { hello: 'a', world: 'b' }
- * invert({ a: 1, b: 2 }) // returns { 1: 'a', 2: 'b' }
- * invert({ a: 'hello', b: 'hello' }) // returns { hello: 'b' }
+ * invert({ a: 1, b: 2 }) // returns { '1': 'a', '2': 'b' } (Note: numeric keys become strings)
+ * invert({ a: 'hello', b: 'hello' }) // returns { hello: 'b' } (Key 'hello' is overwritten)
  */
-export function invert(obj: object): Record<keyof typeof obj, string> {
-    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [value, key]));
+export function invert<K extends string, V extends string | number | symbol>(obj: Record<K, V>): Record<V, K> {
+    // Note: Object.fromEntries implicitly converts keys to strings if they are numbers.
+    // The type Record<V, K> assumes V can be a valid key type, which is true for string | number | symbol.
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [value, key])) as Record<V, K>;
 }
 
 /**

@@ -70,15 +70,14 @@
   "sideEffects": false,
   "scripts": {
     "test": "bun test",
-    "build": "bun build.ts",
-    "release": "bun run test && bun run build && bun release-it"
+    "build": "bun build.ts"
   },
   "devDependencies": {
     "@anymud/bun-plugin-dts": "^1.0.2",
     "@types/bun": "latest",
+    "@types/jest": "^29.5.14",
     "astro": "latest",
     "consola": "^3.2.3",
-    "release-it": "^17.1.1",
     "typedoc": "^0.25.12",
     "typedoc-plugin-markdown": "next"
   },
