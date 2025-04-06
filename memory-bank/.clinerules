@@ -1,0 +1,24 @@
+# <!-- Version: 0.2 | Last Updated: 2025-04-06 -->
+# Project-Specific Rules & Patterns: xdash
+
+## File Naming Conventions
+*   Source files: `*.ts` (e.g., `array.ts`)
+*   Test files: `*.test.ts` (e.g., `array.test.ts`)
+
+## Directory Structure
+*   `src/`: Core library source code.
+*   `tests/`: Unit tests.
+*   `dist/`: Build output (not committed to Git, based on `.gitignore` likely).
+*   `docs/`: Generated API documentation (committed).
+*   `astro/`: Separate Astro project for documentation website.
+*   `memory-bank/`: Contains project context files (this directory).
+*   `.github/workflows/`: Contains CI/CD workflows (e.g., `test.yml`).
+
+## Build & Test
+*   Use `bun test` for running tests.
+*   Use `bun build.ts` for building the library.
+
+## Dependencies
+*   Avoid adding runtime dependencies. Keep the library lean.
+*   Use `devDependencies` for build tools, testing, and documentation generation.
+*   `typescript` is a `peerDependency`.
