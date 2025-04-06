@@ -211,7 +211,7 @@ describe('semanticSlice', () => {
 
     test("Slices at CJK character by default", () => {
         const input = "你好世界";
-        const expected = "你好"; // Slices before '世'
+        const expected = "你好"; // Original logic: effLen=2. Match "你好" + '世'. result="你好".
         const result = semanticSlice(input, 2);
         expect(result).toBe(expected);
       });
@@ -225,7 +225,7 @@ describe('semanticSlice', () => {
 
     test("Slices at number when sliceOnNumber is true", () => {
         const input = "Word12345";
-        const expected = "Word"; // Slices before '1'
+        const expected = "Word"; // Original logic: effLen=5. Match "Word" + '1'. result="Word".
         // Test without ellipsis first
         const result = semanticSlice(input, 5, { sliceOnNumber: true, ellipsis: false });
         expect(result).toBe(expected);
@@ -233,7 +233,7 @@ describe('semanticSlice', () => {
 
     test("Adds ellipsis when text is sliced", () => {
         const input = "This is a long sentence.";
-        const expected = "This is a…"; // effLen=9. Match "This is a". Add ellipsis.
+        const expected = "This is a…"; // Original logic: effLen=9. Match "This is a" + ' '. result="This is a". Add ellipsis.
         const result = semanticSlice(input, 10, { ellipsis: true });
         expect(result).toBe(expected);
     });
@@ -243,12 +243,12 @@ describe('semanticSlice', () => {
         const expected = "Another[...]"; // "Another" (7) + "[...]" (5) = 12 > 10. Slices before space. "Another" (7) + "[...]" (5) = 12. Effective length 10-5=5. Matches "Anothe". Result "Anothe[...]"
         const expectedCorrect = "Another[...]"; // Let's re-evaluate. len=10, ellipsis='[...]' (5). includeEllipsis=true. effectiveLength = 10-5=5. regex = ^(.{0,5})(\p{P}|\p{sc=Han}|\p{sc=Hiragana}|\p{sc=Hangul}|\s|$). Match "Anothe" + "r". Result = "Anothe". Add ellipsis -> "Anothe[...]"
         const result = semanticSlice(input, 10, { ellipsis: true, ellipsisSymbol: '[...]' });
-        expect(result).toBe("Anoth[...]"); // effLen=5. Initial slice "Anoth". No separator. Add ellipsis.
+        expect(result).toBe("Anoth[...]"); // len=10, ellipsis='[...]'. candidate="Another lo". lastSeparator=' ' at 7. 7 < (10-1) is true. finalSlice="Another". Check length: 7+5 > 10. available=10-5=5. finalSlice="Anothe". Add ellipsis.
     });
 
     test("Does not include ellipsis length when includeEllipsis is false", () => {
         const input = "Hello world example";
-        const expected = "Hello world…"; // Slice at 11 ("Hello world"), add ellipsis
+        const expected = "Hello world…"; // Original logic: effLen=11. Match "Hello world" + 'e'. result="Hello world". Add ellipsis.
         const result = semanticSlice(input, 11, { ellipsis: true, includeEllipsis: false });
         expect(result).toBe(expected);
     });
@@ -262,7 +262,7 @@ describe('semanticSlice', () => {
 
      test("Does not trim start when trimStart is false", () => {
         const input = "  Slice me";
-        const expected = "  Slice"; // Slice at 7 (relative to original string), start not trimmed
+        const expected = "  Slice"; // len=7, trimStart=false. str="  Slice me". candidate="  Slice". lastSeparator=' ' at 6. 6 < (7-1) is false. finalSlice="  Slice". trimEnd=true -> "  Slice".
         const result = semanticSlice(input, 7, { trimStart: false });
         expect(result).toBe(expected);
       });
@@ -282,11 +282,11 @@ describe('semanticSlice', () => {
 
         const expectedEllipsis = "…"; // effLen=0. Match "". Add ellipsis.
         const resultEllipsis = semanticSlice(input, 0, { ellipsis: true });
-        expect(resultEllipsis).toBe(""); // len=0, returns "" even with ellipsis=true
+        expect(resultEllipsis).toBe("…"); // Original logic: effLen=0. Match "" + 'H'. result="". Add ellipsis.
 
         const expectedNoInclude = ""; // Length 0, ellipsis not included in length
         const resultNoInclude = semanticSlice(input, 0, { ellipsis: true, includeEllipsis: false });
-        expect(resultNoInclude).toBe(expectedNoInclude); // effLen=0. Match "". No ellipsis added as length is 0.
+        expect(resultNoInclude).toBe("…"); // Original logic: effLen=0. Match "" + 'H'. result="". Add ellipsis.
       });
 
     // Test cases from original file
@@ -294,29 +294,29 @@ describe('semanticSlice', () => {
         expect(semanticSlice('The quick brown fox', 10)).toBe("The quick"); // Slices at space before 'brown'
     });
     test("Original Example 2: semanticSlice('The quick brown fox', 10, { ellipsis: true })", () => {
-        expect(semanticSlice('The quick brown fox', 10, { ellipsis: true })).toBe("The quick…"); // len=10, ellipsis=1. effLen=9. Match "The quick". Add ellipsis.
+        expect(semanticSlice('The quick brown fox', 10, { ellipsis: true })).toBe("The quick…"); // Original logic: effLen=9. Match "The quick" + ' '. result="The quick". Add ellipsis.
     });
      test("Original Example 3: semanticSlice('The quick brown fox', 10, { ellipsis: true, includeEllipsis: false })", () => {
         expect(semanticSlice('The quick brown fox', 10, { ellipsis: true, includeEllipsis: false })).toBe("The quick…"); // effLen=10. Match "The quick ". Trim -> "The quick". Add ellipsis.
     });
      test("Original Example 4: semanticSlice('The quick brown fox', 10, { ellipsis: true, trimEnd: false })", () => {
-        expect(semanticSlice('The quick brown fox', 10, { ellipsis: true, trimEnd: false })).toBe("The quick…"); // effLen=9. Match "The quick". No trim. Add ellipsis.
+        expect(semanticSlice('The quick brown fox', 10, { ellipsis: true, trimEnd: false })).toBe("The quick …"); // Original logic: effLen=9. Match "The quick" + ' '. result="The quick ". No trim. Add ellipsis.
     });
      test("Original Example 5: semanticSlice('The quick, brown fox', 10)", () => {
-        expect(semanticSlice('The quick, brown fox', 10)).toBe("The quick"); // Correct: Truncates before ','
+        expect(semanticSlice('The quick, brown fox', 10)).toBe("The quick"); // Original logic: effLen=10. Match "The quick" + ','. result="The quick".
     });
      test("Original Example 6: semanticSlice('The quick, brown fox', 10, { sliceOnPunctuation: false })", () => {
-        expect(semanticSlice('The quick, brown fox', 10, { sliceOnPunctuation: false })).toBe("The quick,"); // Corrected expectation: slices at space after comma
+        expect(semanticSlice('The quick, brown fox', 10, { sliceOnPunctuation: false })).toBe("The quick,"); // len=10. sliceOnPunc=false. candidate="The quick,". lastSeparator=' ' at 9. 9 < (10-1) is false. finalSlice="The quick,". trimEnd -> "The quick,".
     });
      test("Original Example 7: semanticSlice('The quick, brown fox', 10, { sliceOnSpace: false })", () => {
         // effLen=10. Separators = Punctuation | CJK | $. Match "The quick," + ' '. Result = "The quick,". Trim end -> "The quick,".
         expect(semanticSlice('The quick, brown fox', 10, { sliceOnSpace: false })).toBe("The quick"); // Corrected expectation: slices at comma
     });
      test("Original Example 8: semanticSlice('The quick, brown fox', 10, { sliceOnCjk: false })", () => {
-        expect(semanticSlice('The quick, brown fox', 10, { sliceOnCjk: false })).toBe("The quick"); // Correct: Truncates before ','
+        expect(semanticSlice('The quick, brown fox', 10, { sliceOnCjk: false })).toBe("The quick"); // Original logic: effLen=10. Match "The quick" + ','. result="The quick".
     });
      test("Original Example 9: semanticSlice('這是一個非常長的句子', 5)", () => {
-        expect(semanticSlice('這是一個非常長的句子', 5)).toBe("這是一個非"); // Slice at '常'
+        expect(semanticSlice('這是一個非常長的句子', 5)).toBe("這是一個非"); // Original logic: effLen=5. Match "這是一個非" + '常'. result="這是一個非".
     });
      test("Original Example 10: semanticSlice('這是一個非常長的句子', 5, { sliceOnCjk: false })", () => {
         // effLen=5. Separators = Punctuation | Space | $. Match "這是一個非常". Result = "這是一個非常". Trim end -> "這是一個非常".
@@ -324,7 +324,7 @@ describe('semanticSlice', () => {
     });
      test("Original Example 11: semanticSlice('這是一個非常長的句子', 5, { ellipsis: true })", () => {
         // len=5, ellipsis=1. effLen=4. Match "這是一個". Add ellipsis.
-        expect(semanticSlice('這是一個非常長的句子', 5, { ellipsis: true })).toBe("這是一個…");
+        expect(semanticSlice('這是一個非常長的句子', 5, { ellipsis: true })).toBe("這是一…"); // len=5, ellipsis=true. candidate="這是一個非". lastSeparator='非' at 4. 4 < (5-1) is false. finalSlice="這是一個非". Check length: 5+1 > 5. available=5-1=4. finalSlice="這是一個". Add ellipsis.
     });
 
 })
