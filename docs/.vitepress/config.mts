@@ -128,16 +128,7 @@ export default defineConfig({
               { text: 'values', link: '/api/Function.values' }, // Assuming values from object.ts
             ]
           },
-          {
-            text: 'Semantic',
-            collapsed: true,
-            items: [
-              { text: 'semanticNormalize', link: '/api/Function.semanticNormalize' },
-              { text: 'semanticSlice', link: '/api/Function.semanticSlice' },
-              { text: 'semanticWords', link: '/api/Function.semanticWords' },
-              { text: 'slugify', link: '/api/Function.slugify' },
-            ]
-          },
+          // Removed Semantic section
           {
             text: 'String',
             collapsed: true,

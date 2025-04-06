@@ -12,7 +12,7 @@
     *   Chainable Interface (`Chain` class).
     *   Inline Switch (`InlineSwitch` class).
 *   **Code Structure**: 
-    *   `src/`: Core TypeScript source code.
+        *   `src/`: Core TypeScript source code (semantic.ts removed).
     *   `tests/`: Unit tests using Jest (`bun test`).
     *   `dist/`: Build output (not committed).
     *   `docs/`: VitePress source files (incl. generated API Markdown in `docs/api/`).

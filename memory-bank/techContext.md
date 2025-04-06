@@ -25,4 +25,4 @@
 *   **Dependencies**: No runtime dependencies. `typescript` is a peer dependency.
 *   **Licensing**: MIT License.
 *   **Repository**: GitHub (github.com/shtse8/xdash).
-*   **Deprecated Tech**: Astro (for docs), release-it, vitepress-jsdoc.
+*   **Deprecated Tech**: Astro (for docs), release-it, vitepress-jsdoc, semantic module.

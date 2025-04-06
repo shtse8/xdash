@@ -23,7 +23,7 @@
     2.  Commit current changes (VitePress/TypeDoc setup).
     3.  Push changes to remote repository.
     4.  Set up GitHub Actions for CI/CD (testing, npm publish, GitHub Pages deploy).
-    5.  Address remaining issues (e.g., `semanticSlice` tests, JSDoc warnings).
+        5.  Address remaining issues (e.g., JSDoc warnings). (Semantic module removed)
     6.  Integrate benchmarking.
     7.  Manually enhance generated API docs with more examples/tutorials.
-*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress.
+*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues.

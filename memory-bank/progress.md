@@ -15,4 +15,4 @@
     5.  **Enhance Docs**: Manually add detailed examples and tutorials to generated API Markdown files.
     6.  **Review JSDoc**: Address TypeDoc warnings about unused `@param` tags.
 *   **Current Status**: Documentation setup using VitePress + TypeDoc completed. Ready to commit changes and set up CI/CD.
-*   **Known Issues**: `semanticSlice` tests are failing. TypeDoc shows warnings about unused `@param` tags.
+*   **Known Issues**: TypeDoc shows warnings about unused `@param` tags. (Semantic module removed)
