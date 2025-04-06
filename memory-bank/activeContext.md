@@ -1,7 +1,7 @@
-<!-- Version: 0.5 | Last Updated: 2025-04-06 -->
+<!-- Version: 0.6 | Last Updated: 2025-04-06 -->
 # Active Context
 
-*   **Current Focus**: Finalizing documentation setup and preparing for CI/CD.
+*   **Current Focus**: Finalizing documentation and CI/CD setup.
 *   **Recent Changes**:
     1.  Completed test refactoring for most modules (excluding `semanticSlice`).
     2.  Removed old release tool (`release-it`).
@@ -19,12 +19,15 @@
     14. Updated Hero Page content in `docs/index.md`.
     15. Copied banner image to `docs/public/`.
     16. Rewrote `README.md` for better promotion and added Buy Me a Coffee link.
+    17. Updated `.gitignore` to exclude `docs/api/` and removed tracked files from Git.
+    18. Updated GitHub repository settings (description, topics, URL) via `gh` CLI.
+    19. Created GitHub Actions CI/CD workflow file (`.github/workflows/ci.yml`) for testing, building, npm publish, and docs deployment.
 *   **Next Steps (High-Level Plan)**:
-    1.  Commit current changes (VitePress/TypeDoc setup + README update).
-    2.  Push changes to remote repository.
-    3.  Set up GitHub Actions for CI/CD (testing, npm publish, GitHub Pages deploy).
-    4.  Address remaining issues (e.g., JSDoc warnings). (Semantic module removed)
-    5.  Integrate benchmarking.
-    6.  Manually enhance generated API docs with more examples/tutorials.
-    7.  Create `CONTRIBUTING.md`.
-*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues.
+    1.  **Push Changes**: Push all recent commits (Docs, README, .gitignore, CI/CD) to the remote repository (`main` branch).
+    2.  **Configure GitHub**: Ensure `NPM_TOKEN` secret and GitHub Pages source are set correctly in repository settings.
+    3.  **Test CI/CD**: Monitor the first run of the GitHub Actions workflow after pushing.
+    4.  **Address remaining issues**: (e.g., JSDoc warnings). (Semantic module removed)
+    5.  **Integrate benchmarking**.
+    6.  **Manually enhance generated API docs** with more examples/tutorials.
+    7.  **Create `CONTRIBUTING.md`**.
+*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues. CI/CD workflow implemented using GitHub Actions.
