@@ -1,7 +1,7 @@
-<!-- Version: 0.7 | Last Updated: 2025-04-06 -->
+<!-- Version: 0.8 | Last Updated: 2025-04-06 -->
 # Active Context
 
-*   **Current Focus**: Monitoring CI/CD after first tag push.
+*   **Current Focus**: Monitoring CI/CD after first tag push and adding standard project files.
 *   **Recent Changes**:
     1.  Completed test refactoring for most modules (excluding `semanticSlice`).
     2.  Removed old release tool (`release-it`).
@@ -24,12 +24,15 @@
     19. Created GitHub Actions CI/CD workflow file (`.github/workflows/ci.yml`) for testing, building, npm publish, and docs deployment.
     20. Pushed all changes to `main` branch.
     21. Created and pushed Git tag `v0.5.12` to trigger npm publish workflow.
+    22. Added `LICENSE` file (MIT).
+    23. Added `CHANGELOG.md` file with initial content for v0.5.12.
 *   **Next Steps (High-Level Plan)**:
-    1.  **Monitor CI/CD**: Check GitHub Actions for successful completion of tests, build, and npm publish for tag `v0.5.12`. Check GitHub Pages deployment status after `main` branch workflow run.
-    2.  **Verify npm**: Check npmjs.com to confirm version `0.5.12` is published.
-    3.  **Verify Docs**: Check the GitHub Pages URL (`https://shtse8.github.io/xdash/`) once deployment is complete.
-    4.  **Address remaining issues**: (e.g., JSDoc warnings). (Semantic module removed)
-    5.  **Integrate benchmarking**.
-    6.  **Manually enhance generated API docs** with more examples/tutorials.
-    7.  **Create `CONTRIBUTING.md`**.
-*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues. CI/CD workflow implemented using GitHub Actions. Triggered first release via tag `v0.5.12`.
+    1.  **Push Changes**: Push the latest commits (LICENSE, CHANGELOG) to the remote repository (`main` branch).
+    2.  **Monitor CI/CD**: Check GitHub Actions for successful completion of tests, build, and npm publish for tag `v0.5.12`. Check GitHub Pages deployment status after `main` branch workflow run.
+    3.  **Verify npm**: Check npmjs.com to confirm version `0.5.12` is published.
+    4.  **Verify Docs**: Check the GitHub Pages URL (`https://shtse8.github.io/xdash/`) once deployment is complete.
+    5.  **Address remaining issues**: (e.g., JSDoc warnings). (Semantic module removed)
+    6.  **Integrate benchmarking**.
+    7.  **Manually enhance generated API docs** with more examples/tutorials.
+    8.  **Create `CONTRIBUTING.md`**.
+*   **Active Decisions**: Using TypeDoc to generate Markdown for API reference, displayed via VitePress. Removed semantic module due to complexity/issues. CI/CD workflow implemented using GitHub Actions. Triggered first release via tag `v0.5.12`. Added standard LICENSE and CHANGELOG files.
