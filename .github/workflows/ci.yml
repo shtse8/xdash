@@ -18,6 +18,11 @@ permissions:
   pages: write # Needed for gh-pages deployment
   id-token: write # Needed for OIDC publishing to npm (if using trusted publisher)
 
+concurrency:
+  # Fast Trunk: supersede obsolete runs for the same PR or branch tip.
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   # Job to run tests and build the project
   test_and_build:
