@@ -79,7 +79,7 @@
   "devDependencies": {
     "@anymud/bun-plugin-dts": "^1.0.2",
     "@types/bun": "latest",
-    "@types/jest": "^29.5.14",
+    "@types/jest": "^30.0.0",
     "consola": "^3.2.3",
     "typedoc": "^0.28.1",
     "typedoc-plugin-markdown": "^4.6.1",
