@@ -1,7 +1,7 @@
 # xdash: The Lean, Mean, TypeScript Utility Machine 🚀
 
 <p align="center">
-  <img src="https://mark.sylphx.com/api/v1/mark/hero?type=orbit&theme=tokyonight&text=xdash&desc=Lean%2C+performant%2C+strongly-typed+TypeScript+utility+library.+Zero+runtime+dependencies.+Modern%E2%80%A6&height=200&animation=rise" alt="xdash — Sylphx Mark banner" width="100%" />
+  <img src="https://mark.sylphx.com/api/v1/mark/hero.svg?type=waving&theme=dark&text=xdash&desc=A%20lean%2C%20typed%20TypeScript%20utility%20library" alt="xdash" width="100%" />
 </p>
 
 ### Build Faster, Smarter, and Lighter with xdash.
